@@ -1,0 +1,3 @@
+rootProject.name = 'BLECup'
+
+include ':app'
