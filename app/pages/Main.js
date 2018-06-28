@@ -27,7 +27,7 @@ export default class Main extends Component {
             receiveData:'',
             readData:'',
             isMonitoring:false
-        }
+        };
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.deviceMap = new Map();
 
@@ -59,45 +59,43 @@ export default class Main extends Component {
     handleUpdateState=(args)=>{
         console.log('BleManagerDidUpdateStatea:', args);
         BluetoothManager.bluetoothState = args.state;
-        if(args.state == 'on'){  //蓝牙打开时自动搜索
+        if(args.state === 'on'){  //蓝牙打开时自动搜索
             this.scan();
         }
-    }
+    };
 
     //扫描结束监听
     handleStopScan=()=>{
         console.log('BleManagerStopScan:','Scanning is stopped');
         this.setState({scaning:false});
-    }
+    };
 
     //搜索到一个新设备监听
     handleDiscoverPeripheral=(data)=>{
         // console.log('BleManagerDiscoverPeripheral:', data);
         console.log(data.id,data.name);
-        let id;  //蓝牙连接id
+        let id = data.id;  //蓝牙连接id
         let macAddress;  //蓝牙Mac地址
-        if(Platform.OS == 'android'){
+        if(Platform.OS === 'android'){
             macAddress = data.id;
-            id = macAddress;
         }else{
             //ios连接时不需要用到Mac地址，但跨平台识别同一设备时需要Mac地址
             //如果广播携带有Mac地址，ios可通过广播0x18获取蓝牙Mac地址，
             macAddress = BluetoothManager.getMacAddressFromIOS(data);
-            id = data.id;
         }
         this.deviceMap.set(data.id,data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
         this.setState({data:[...this.deviceMap.values()]});
-    }
+    };
 
     //蓝牙设备已连接
     handleConnectPeripheral=(args)=>{
         console.log('BleManagerConnectPeripheral:', args);
-    }
+    };
 
     //蓝牙设备已断开连接
     handleDisconnectPeripheral=(args)=>{
         console.log('BleManagerDisconnectPeripheral:', args);
-        let newData = [...this.deviceMap.values()]
+        let newData = [...this.deviceMap.values()];
         BluetoothManager.initUUID();  //断开连接后清空UUID
         this.setState({
             data:newData,
@@ -107,7 +105,7 @@ export default class Main extends Component {
             receiveData:'',
             text:'',
         });
-    }
+    };
 
     //接收到新数据
     handleUpdateValue=(data)=>{
@@ -116,7 +114,7 @@ export default class Main extends Component {
         this.bluetoothReceiveData.push(value);
         console.log('BluetoothUpdateValue', value);
         this.setState({receiveData:this.bluetoothReceiveData.join('')})
-    }
+    };
 
     connect(item){
         //当前蓝牙正在连接时不能打开另一个连接进程
@@ -128,7 +126,7 @@ export default class Main extends Component {
             BluetoothManager.stopScan();
             this.setState({scaning:false});
         }
-        let newData = [...this.deviceMap.values()]
+        let newData = [...this.deviceMap.values()];
         newData[item.index].isConnecting = true;
         this.setState({data:newData});
 
@@ -163,7 +161,7 @@ export default class Main extends Component {
             BluetoothManager.stopScan();
             this.setState({scaning:false});
         }
-        if(BluetoothManager.bluetoothState == 'on'){
+        if(BluetoothManager.bluetoothState === 'on'){
             BluetoothManager.scan()
                 .then(()=>{
                     this.setState({ scaning:true });
@@ -172,7 +170,7 @@ export default class Main extends Component {
             })
         }else{
             BluetoothManager.checkState();
-            if(Platform.OS == 'ios'){
+            if(Platform.OS === 'ios'){
                 this.alert('请开启手机蓝牙');
             }else{
                 Alert.alert('提示','请开启手机蓝牙',[
@@ -258,7 +256,7 @@ export default class Main extends Component {
         return(
             <TouchableOpacity
                 activeOpacity={0.7}
-                disabled={this.state.isConnected?true:false}
+                disabled={this.state.isConnected}
                 onPress={()=>{this.connect(item)}}
                 style={styles.item}>
 
@@ -270,7 +268,7 @@ export default class Main extends Component {
 
             </TouchableOpacity>
         );
-    }
+    };
 
     renderHeader=()=>{
         return(
@@ -373,7 +371,16 @@ export default class Main extends Component {
                     ListFooterComponent={this.renderFooter}
                     keyExtractor={item=>item.id}
                     data={this.state.data}
-                    extraData={[this.state.isConnected,this.state.text,this.state.receiveData,this.state.readData,this.state.writeData,this.state.isMonitoring,this.state.scaning]}
+                    extraData={
+                        [
+                            this.state.isConnected,
+                            this.state.text,
+                            this.state.receiveData,
+                            this.state.readData,
+                            this.state.writeData,
+                            this.state.isMonitoring,
+                            this.state.scaning
+                        ]}
                     keyboardShouldPersistTaps='handled'
                 />
             </View>
@@ -385,7 +392,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor:'white',
-        marginTop:Platform.OS == 'ios'?20:0,
+        marginTop:Platform.OS === 'ios'?20:0,
     },
     item:{
         flexDirection:'column',
@@ -401,7 +408,6 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         borderRadius:5,
         justifyContent:"center",
-        alignItems:'center',
         alignItems:'flex-start',
         marginTop:10
     },
