@@ -1,4 +1,5 @@
 import { AppRegistry } from 'react-native';
-import Main from './app/pages/Main';
+import MainTab from './app/pages/MainTab';
+import './app/util/Global';
 
-AppRegistry.registerComponent('BLECup', () => Main);
+AppRegistry.registerComponent('BLECup', () => MainTab);

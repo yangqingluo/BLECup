@@ -56,7 +56,7 @@ export default class BleModule{
     }
 
     /** 
-     * 扫描可用设备，5秒后结束 
+     * 扫描可用设备
      * Scan for availables peripherals. 
      * */
     scan() {

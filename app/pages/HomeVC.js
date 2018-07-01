@@ -15,7 +15,7 @@ import BleModule from './BleModule';
 //确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
 global.BluetoothManager = new BleModule();
 
-export default class Main extends Component {
+export default class HomeVC extends Component {
     constructor(props) {
         super(props);
         this.state={
