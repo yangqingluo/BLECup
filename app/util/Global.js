@@ -181,37 +181,37 @@ global.appData = {
     OnEndReachedThreshold: 0.1,
 };
 
-// global.appStyles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: appData.appViewColor,
-//     },
-//     sureBtnContainer: {
-//         width:appData.appSureButtonWidth,
-//         height:appData.appSureButtonHeight,
-//         borderRadius:appData.appSureButtonRadius,
-//         backgroundColor: appData.appBlueColor,
-//         alignItems: "center",
-//         justifyContent: "center",
-//     },
-//     orderBtnContainer:{
-//         minWidth: 91,
-//         height: 33,
-//         paddingHorizontal: 5,
-//         justifyContent: "center",
-//         alignItems: "center",
-//         borderRadius: 100,
-//         borderWidth: 1,
-//     },
-// });
-//
-// global.appFont = {
-//     Ionicons,
-//     FontAwesome
-// };
-// global.screenWidth = width;
-// global.screenHeight = height;
-// global.dismissKeyboard = require('dismissKeyboard');
+global.appStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: appData.ViewColor,
+    },
+    sureBtnContainer: {
+        width:appData.SureButtonWidth,
+        height:appData.SureButtonHeight,
+        borderRadius:appData.SureButtonRadius,
+        backgroundColor: appData.BlueColor,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    orderBtnContainer:{
+        minWidth: 91,
+        height: 33,
+        paddingHorizontal: 5,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 100,
+        borderWidth: 1,
+    },
+});
+
+global.appFont = {
+    Ionicons,
+    FontAwesome
+};
+global.screenWidth = width;
+global.screenHeight = height;
+global.dismissKeyboard = require('dismissKeyboard');
 //
 // global.judgeMobilePhone = function(object : String) : boolean {
 //     // /^1[3|4|5|7|8][0-9]{9}$/
@@ -277,6 +277,10 @@ global.appData = {
 //     return val1 > val2;
 // };
 
+const basePx = 375;
+global.px2dp = function (px) {
+    return px *  width / basePx;
+};
 
 export const imagePickerOptions = {
     quality: 1.0,
