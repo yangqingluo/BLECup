@@ -13,6 +13,11 @@ import {
 
 
 export default class MineVC extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerTitle: '我的',
+        tabBarLabel: '我的',
+    });
+
     render() {
         return <View>
         </View>

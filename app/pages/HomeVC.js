@@ -16,6 +16,11 @@ import BleModule from './BleModule';
 global.BluetoothManager = new BleModule();
 
 export default class HomeVC extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerTitle: "水杯",
+        tabBarLabel: "水杯",
+    });
+
     constructor(props) {
         super(props);
         this.state={
@@ -360,7 +365,7 @@ export default class HomeVC extends Component {
                 />
             </View>
         )
-    }
+    };
 
     render () {
         return (
@@ -392,7 +397,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor:'white',
-        marginTop:Platform.OS === 'ios'?20:0,
     },
     item:{
         flexDirection:'column',
@@ -427,6 +431,6 @@ const styles = StyleSheet.create({
         fontSize:16,
         flex:1,
     },
-})
+});
 
 

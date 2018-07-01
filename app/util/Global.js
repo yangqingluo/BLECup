@@ -138,9 +138,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 //     global.userData = data;
 // };
 
-let appData = {
+global.appData = {
     FontWeightLight:'100',
-    FontWeightSemibold: '400',
+    FontWeightSemiBold: '400',
     FontWeightMedium:'800',
 
     ClearColor: '#fff0',
@@ -180,7 +180,6 @@ let appData = {
 
     OnEndReachedThreshold: 0.1,
 };
-global.appData = appData;
 
 // global.appStyles = StyleSheet.create({
 //     container: {
@@ -277,3 +276,17 @@ global.appData = appData;
 // global.compare = function compare(val1, val2){
 //     return val1 > val2;
 // };
+
+
+export const imagePickerOptions = {
+    quality: 1.0,
+    maxWidth: 500,
+    maxHeight: 500,
+    title: null,
+    takePhotoButtonTitle: '选择相机',
+    chooseFromLibraryButtonTitle: '选择相册',
+    cancelButtonTitle: '取消',
+    storageOptions: {
+        skipBackup: true
+    }
+};

@@ -40,7 +40,7 @@ const MainTabNavigator = TabNavigator(
         tabBarPosition: 'bottom',
         lazy: true,
         tabBarOptions: {
-            // activeTintColor: appData.appBlueColor,
+            activeTintColor: appData.BlueColor,
             inactiveTintColor: '#6A6A6A',
             labelStyle: {
                 marginTop: 0,
@@ -74,7 +74,7 @@ const MainTabNavigator = TabNavigator(
 );
 
 export default class MainTab extends MainTabNavigator {
-    // componentDidMount() {
-    //     global.appMainTab = this;
-    // }
+    componentDidMount() {
+        // global.appMainTab = this;
+    }
 }
