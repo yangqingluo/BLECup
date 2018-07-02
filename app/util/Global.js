@@ -12,70 +12,70 @@ const {width, height}=Dimensions.get('window');
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-// Date.prototype.pattern=function(fmt) {
-//     let o = {
-//         "M+" : this.getMonth() + 1, //月份
-//         "d+" : this.getDate(), //日
-//         "h+" : this.getHours()%12 === 0 ? 12 : this.getHours() % 12, //小时
-//         "H+" : this.getHours(), //小时
-//         "m+" : this.getMinutes(), //分
-//         "s+" : this.getSeconds(), //秒
-//         "q+" : Math.floor((this.getMonth() + 3) / 3), //季度
-//         "S" : this.getMilliseconds() //毫秒
-//     };
-//     let week = {
-//         "0" : "/u65e5",
-//         "1" : "/u4e00",
-//         "2" : "/u4e8c",
-//         "3" : "/u4e09",
-//         "4" : "/u56db",
-//         "5" : "/u4e94",
-//         "6" : "/u516d"
-//     };
-//     if(/(y+)/.test(fmt)){
-//         fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-//     }
-//     if(/(E+)/.test(fmt)){
-//         fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "") + week[this.getDay() + ""]);
-//     }
-//     for(let k in o){
-//         if(new RegExp("("+ k +")").test(fmt)){
-//             fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-//         }
-//     }
-//     return fmt;
-// };
-//
-// Date.prototype.Format = function (fmt) {
-//     let o = {
-//         "M+": this.getMonth() + 1, //月份
-//         "d+": this.getDate(), //日
-//         "h+": this.getHours(), //小时
-//         "m+": this.getMinutes(), //分
-//         "s+": this.getSeconds(), //秒
-//         "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-//         "S": this.getMilliseconds() //毫秒
-//     };
-//     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-//     for (let k in o)
-//         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-//     return fmt;
-// };
-//
-// Number.prototype.Format = function (n) : String {
-//     let s = this;
-//     if(s === '')
-//         return;
-//     n = n > 0 && n <= 20 ? n : 2;
-//     s = parseFloat((s + "").replace("/[^\\d\\.-]/g", "")).toFixed(n) + "";
-//     let l = s.split(".")[0].split("").reverse(),
-//         r = s.split(".")[1];
-//     let t = "";
-//     for(let i = 0; i < l.length; i ++ ) {
-//         t += l[i] + ((i + 1) % 3 === 0 && (i + 1) !== l.length ? "," : "");
-//     }
-//     return t.split("").reverse().join("") + "." + r;
-// };
+Date.prototype.pattern=function(fmt) {
+    let o = {
+        "M+" : this.getMonth() + 1, //月份
+        "d+" : this.getDate(), //日
+        "h+" : this.getHours()%12 === 0 ? 12 : this.getHours() % 12, //小时
+        "H+" : this.getHours(), //小时
+        "m+" : this.getMinutes(), //分
+        "s+" : this.getSeconds(), //秒
+        "q+" : Math.floor((this.getMonth() + 3) / 3), //季度
+        "S" : this.getMilliseconds() //毫秒
+    };
+    let week = {
+        "0" : "/u65e5",
+        "1" : "/u4e00",
+        "2" : "/u4e8c",
+        "3" : "/u4e09",
+        "4" : "/u56db",
+        "5" : "/u4e94",
+        "6" : "/u516d"
+    };
+    if(/(y+)/.test(fmt)){
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    if(/(E+)/.test(fmt)){
+        fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "") + week[this.getDay() + ""]);
+    }
+    for(let k in o){
+        if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+    }
+    return fmt;
+};
+
+Date.prototype.Format = function (fmt) {
+    let o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (let k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+};
+
+Number.prototype.Format = function (n) : String {
+    let s = this;
+    if(s === '')
+        return;
+    n = n > 0 && n <= 20 ? n : 2;
+    s = parseFloat((s + "").replace("/[^\\d\\.-]/g", "")).toFixed(n) + "";
+    let l = s.split(".")[0].split("").reverse(),
+        r = s.split(".")[1];
+    let t = "";
+    for(let i = 0; i < l.length; i ++ ) {
+        t += l[i] + ((i + 1) % 3 === 0 && (i + 1) !== l.length ? "," : "");
+    }
+    return t.split("").reverse().join("") + "." + r;
+};
 //
 // let storage = new Storage({
 //     // 最大容量，默认值1000条数据循环存储
@@ -212,70 +212,72 @@ global.appFont = {
 global.screenWidth = width;
 global.screenHeight = height;
 global.dismissKeyboard = require('dismissKeyboard');
-//
-// global.judgeMobilePhone = function(object : String) : boolean {
-//     // /^1[3|4|5|7|8][0-9]{9}$/
-//     let reg = /^1[0-9]{10}$/;
-//     return reg.test(object);
-// };
-//
-// global.judgeVerifyCode = function(object : String) : boolean {
-//     let reg = /^[0-9]{4}$/;
-//     return reg.test(object);
-// };
-//
-// global.judgePassword = function(object : String) : boolean {
-//     let reg = /^[a-zA-Z0-9]{6,20}$/;
-//     return reg.test(object);
-// };
-//
-// global.objectNotNull = function(object) : boolean {
-//     return ((object !== null) && (typeof(object) !== appUndefined));
-// };
-//
-// global.arrayNotEmpty = function(object) : boolean {
-//     return ((object !== null) && (typeof(object) !== appUndefined) && object.length > 0);
-// };
-//
-// global.dateStringIsValid = function check(dateString) : boolean {
-//     return (new Date(dateString).getDate() === dateString.substring(dateString.length - 2));
-// };
-//
-// global.dateIsValid = function check(date) : boolean {
-//     if (objectNotNull(date)) {
-//         return date.Format("yyyy").search("NaN") === -1;
-//     }
-//     return false;
-// };
-//
-// global.objectIsZero = function(object) : boolean {
-//     return ((object === null) || (typeof(object) === appUndefined) || (parseInt(object) === 0));
-// };
-//
-// global.stringIsEmpty = function(object) : boolean {
-//     return ((object === null) || (typeof(object) === appUndefined) || object.length === 0);
-// };
-//
-// global.createTimeFormat = function(time, format) : String {
-//     if (time !== null) {
-//         let date = new Date(parseFloat(time) * 1000);
-//         // date.setTime(time * 1000);
-//         return date.pattern(format);
-//     }
-//     return "1970-01-01";
-// };
-//
-// global.deepCopy = function(obj : Object) : Object {
-//     let newobj = {};
-//     for (let attr in obj) {
-//         newobj[attr] = obj[attr];
-//     }
-//     return newobj;
-// };
-//
-// global.compare = function compare(val1, val2){
-//     return val1 > val2;
-// };
+global.appUrl = 'http://shiphire.com.cn/';
+global.appUndefined =  'undefined';
+
+global.judgeMobilePhone = function(object : String) : boolean {
+    // /^1[3|4|5|7|8][0-9]{9}$/
+    let reg = /^1[0-9]{10}$/;
+    return reg.test(object);
+};
+
+global.judgeVerifyCode = function(object : String) : boolean {
+    let reg = /^[0-9]{4}$/;
+    return reg.test(object);
+};
+
+global.judgePassword = function(object : String) : boolean {
+    let reg = /^[a-zA-Z0-9]{6,20}$/;
+    return reg.test(object);
+};
+
+global.objectNotNull = function(object) : boolean {
+    return ((object !== null) && (typeof(object) !== appUndefined));
+};
+
+global.arrayNotEmpty = function(object) : boolean {
+    return ((object !== null) && (typeof(object) !== appUndefined) && object.length > 0);
+};
+
+global.dateStringIsValid = function check(dateString) : boolean {
+    return (new Date(dateString).getDate() === dateString.substring(dateString.length - 2));
+};
+
+global.dateIsValid = function check(date) : boolean {
+    if (objectNotNull(date)) {
+        return date.Format("yyyy").search("NaN") === -1;
+    }
+    return false;
+};
+
+global.objectIsZero = function(object) : boolean {
+    return ((object === null) || (typeof(object) === appUndefined) || (parseInt(object) === 0));
+};
+
+global.stringIsEmpty = function(object) : boolean {
+    return ((object === null) || (typeof(object) === appUndefined) || object.length === 0);
+};
+
+global.createTimeFormat = function(time, format) : String {
+    if (time !== null) {
+        let date = new Date(parseFloat(time) * 1000);
+        // date.setTime(time * 1000);
+        return date.pattern(format);
+    }
+    return "1970-01-01";
+};
+
+global.deepCopy = function(obj : Object) : Object {
+    let newobj = {};
+    for (let attr in obj) {
+        newobj[attr] = obj[attr];
+    }
+    return newobj;
+};
+
+global.compare = function compare(val1, val2){
+    return val1 > val2;
+};
 
 const basePx = 375;
 global.px2dp = function (px) {

@@ -12,13 +12,33 @@ import {
     Platform,
     TextInput,
 } from 'react-native';
-
+import CustomItem from '../components/CustomItem';
 
 export default class MineVC extends Component {
     static navigationOptions = ({ navigation }) => ({
         tabBarLabel: '我的',
         header: null,
     });
+
+    constructor(props){
+        super(props);
+        this.state = {
+            refreshing: false
+        };
+        this.config = [
+            {idKey:"info", name:"个人资料修改", logo:require('../images/icon_info.png'), onPress:this.cellSelected.bind(this, "UserInfo")},
+            {idKey:"clock", name:"闹钟设置", logo:require('../images/icon_clock.png'), onPress:this.cellSelected.bind(this, "Clock")},
+        ];
+    }
+
+    cellSelected(key, data = {}){
+        if (key === "UserInfo") {
+            this.props.navigation.navigate(key);
+        }
+        else if (key === "Clock") {
+            this.props.navigation.navigate(key);
+        }
+    }
 
     _renderHeader() {
         return (
@@ -44,9 +64,18 @@ export default class MineVC extends Component {
         );
     }
 
+    _renderListItem() {
+        return this.config.map((item, i) => {
+            return <View key={'cell' + i} style={{paddingLeft: 10}}>
+                <CustomItem key={i} {...item}/>
+            </View>;
+        })
+    }
+
     render() {
         return <ScrollView style={appStyles.container}>
             {this._renderHeader()}
+            {this._renderListItem()}
         </ScrollView>
     }
 }
