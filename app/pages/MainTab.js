@@ -41,7 +41,7 @@ const MainTabNavigator = TabNavigator(
         lazy: true,
         tabBarOptions: {
             activeTintColor: appData.BlueColor,
-            inactiveTintColor: '#6A6A6A',
+            // inactiveTintColor: '#6A6A6A',
             labelStyle: {
                 marginTop: 0,
                 fontSize: 10, // 文字大小
@@ -49,7 +49,7 @@ const MainTabNavigator = TabNavigator(
             },
             //tabStyle的父容器
             style: {
-                //backgroundColor: '#0ff',
+                // backgroundColor: '#0ff',
                 height: 50,
                 //position: 'absolute',
                 //overflow: 'visible',

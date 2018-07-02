@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {Image, Platform} from 'react-native';
+import {View, Image, Platform} from 'react-native';
 
 export default class TabBarItem extends PureComponent {
     render() {
