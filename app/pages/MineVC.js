@@ -31,12 +31,20 @@ export default class MineVC extends Component {
         ];
     }
 
+    componentDidMount() {
+        global.appMineVC = this;
+    }
+
+    _refreshSubviews() {
+        this.forceUpdate();
+    }
+
     cellSelected(key, data = {}){
         if (key === "UserInfo") {
-            this.props.navigation.navigate(key);
+            this.props.navigation.navigate(key, {});
         }
         else if (key === "Clock") {
-            this.props.navigation.navigate(key);
+            this.props.navigation.navigate(key, {});
         }
     }
 
@@ -44,20 +52,20 @@ export default class MineVC extends Component {
         return (
             <ImageBackground source={require('../images/account_background.png')} style={styles.headerContainer}>
                 <Image source={require('../images/role.png')} style={{width: 80, height: 80}} />
-                <Text style={[styles.bottomText, {marginTop: 5}]}>{"1234"}</Text>
+                <Text style={[styles.bottomText, {marginTop: 5}]}>{stringIsEmpty(userData.name) ? "未设置" : userData.name}</Text>
                 <View style={{flex:1}}/>
                 <View style={{width: screenWidth, height: 1, backgroundColor: appData.SeparatorColor}}/>
                 <View style={styles.headerBottom}>
                     <View style={styles.bottomItem}>
-                        <Text style={styles.bottomText}>{"6cm\n身高"}</Text>
+                        <Text style={styles.bottomText}>{objectShowZero(userData.height) + "cm\n身高"}</Text>
                     </View>
                     <View style={{width:1, height: 24, backgroundColor:"white"}}/>
                     <View style={styles.bottomItem}>
-                        <Text style={styles.bottomText}>{"11kg\n体重"}</Text>
+                        <Text style={styles.bottomText}>{objectShowZero(userData.weight) + "kg\n体重"}</Text>
                     </View>
                     <View style={{width:1, height: 24, backgroundColor:"white"}}/>
                     <View style={styles.bottomItem}>
-                        <Text style={styles.bottomText}>{"110ml\n目标"}</Text>
+                        <Text style={styles.bottomText}>{objectShowZero(userData.capacity) + "ml\n目标"}</Text>
                     </View>
                 </View>
             </ImageBackground>

@@ -99,42 +99,42 @@ global.storage = new Storage({
     // 或是在任何时候，直接对storage.sync进行赋值修改
     // sync: require('./sync') // 这个sync文件是要你自己写的
 });
-//
-// //用户登录数据
-// global.userData = null;
-// //刷新的时候重新获得用户数据
-// storage.load({
-//     key: 'userData',
-// }).then(ret => {
-//     global.userData = ret;
-// }).catch(err => {
-//     global.userData = null;
-// });
-//
-// global.PublicLog = (...params) => { // 全局Log
-//     if (GLOBAL.__DEV__) {
-//         console.log(params);
-//     }
-// };
-//
-// global.PublicAlert = (...params) => {
-//     Alert.alert(...params);
-// };
-//
-// global.PublicResetAction = (routeName) => NavigationActions.reset({
-//     index: 0,
-//     actions: [
-//         NavigationActions.navigate({routeName: routeName, params:{}})
-//     ]
-// });
-//
-// global.saveUserData = (data) => {
-//     global.storage.save({
-//         key: 'userData', // 注意:请不要在key中使用_下划线符号!
-//         data: data,
-//     });
-//     global.userData = data;
-// };
+
+//用户登录数据
+global.userData = {};
+//刷新的时候重新获得用户数据
+storage.load({
+    key: 'userData',
+}).then(ret => {
+    global.userData = ret;
+}).catch(err => {
+    // global.userData = null;
+});
+
+global.PublicLog = (...params) => { // 全局Log
+    if (GLOBAL.__DEV__) {
+        console.log(params);
+    }
+};
+
+global.PublicAlert = (...params) => {
+    Alert.alert(...params);
+};
+
+global.PublicResetAction = (routeName) => NavigationActions.reset({
+    index: 0,
+    actions: [
+        NavigationActions.navigate({routeName: routeName, params:{}})
+    ]
+});
+
+global.saveUserData = (data) => {
+    global.storage.save({
+        key: 'userData', // 注意:请不要在key中使用_下划线符号!
+        data: data,
+    });
+    global.userData = data;
+};
 
 global.appData = {
     FontWeightLight:'100',
@@ -212,6 +212,8 @@ global.screenHeight = height;
 global.dismissKeyboard = require('dismissKeyboard');
 global.appUrl = 'http://shiphire.com.cn/';
 global.appUndefined =  'undefined';
+global.appHomeVC = null;
+global.appMineVC = null;
 
 global.judgeMobilePhone = function(object : String) : boolean {
     // /^1[3|4|5|7|8][0-9]{9}$/
@@ -249,7 +251,11 @@ global.dateIsValid = function check(date) : boolean {
 };
 
 global.objectIsZero = function(object) : boolean {
-    return ((object === null) || (typeof(object) === appUndefined) || (parseInt(object) === 0));
+    return (stringIsEmpty(object) || (parseInt(object) === 0));
+};
+
+global.objectShowZero = function(object) : boolean {
+    return objectIsZero(object) ? "0" : object;
 };
 
 global.stringIsEmpty = function(object) : boolean {

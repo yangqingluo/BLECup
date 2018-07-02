@@ -63,11 +63,12 @@ export default class CustomItem extends Component {
                     {logo? (<Image source={logo} style={{width: logoWidth, height: logoHeight, resizeMode: "cover", overflow:"hidden"}}/>) : null}
                     <Text style={styles.textLabel}>{name}</Text>
                     {/*{editable ? null : <View style={{flex: 1}}/>}*/}
-                    {editable ? <TextInput underlineColorAndroid="transparent"
+                    {editable ? <CustomInput underlineColorAndroid="transparent"
                                            keyboardType={this.props.numeric ? "numeric" : "default"}
                                            secureTextEntry={this.props.secureTextEntry}
                                            maxLength={maxLength}
                                            style={styles.textInput}
+                                           // defaultValue={editValue}//会导致ios原生中文无法输入
                                            placeholder={objectNotNull(editValue) ? editValue : (objectNotNull(subName) ? subName : "" )}
                                            placeholderTextColor={appData.appSecondaryTextColor}
                                            editable={editable}
