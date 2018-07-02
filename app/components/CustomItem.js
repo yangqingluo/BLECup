@@ -29,7 +29,7 @@ export default class CustomItem extends Component {
         first: PropTypes.bool,
         noSeparator: PropTypes.bool,
         avatar: PropTypes.object,
-        disable: PropTypes.bool,
+        editable: PropTypes.bool,
         numeric: PropTypes.bool,
         secureTextEntry: PropTypes.bool,
         maxLength: PropTypes.number,
@@ -39,7 +39,8 @@ export default class CustomItem extends Component {
         font: PropTypes.string,
         showArrowForward: PropTypes.bool,
         hideArrowForward: PropTypes.bool,
-        onPress: PropTypes.func
+        onPress: PropTypes.func,
+        callback: PropTypes.func,
     };
 
     static defaultProps = {
@@ -48,48 +49,44 @@ export default class CustomItem extends Component {
         hideArrowForward: false,
         logoWidth: 22,
         logoHeight: 22,
+        name: "",
+        subName: "",
     };
 
     _render(){
-        let {logo, iconSize, logoWidth, logoHeight, name, subName, editValue, color, noSeparator, avatar, disable, font, showArrowForward, hideArrowForward, maxLength} = this.props;
+        let {logo, iconSize, logoWidth, logoHeight, name, subName, editValue, color, noSeparator, avatar, editable, font, showArrowForward, hideArrowForward, maxLength} = this.props;
         let radius = 12;
         return (
             <View style={{flexDirection: "column"}}>
                 {noSeparator ? null : <View style={{height: appData.SeparatorHeight, backgroundColor: appData.SeparatorLightColor}}/>}
                 <View style={styles.listItem} {...this.props}>
                     {logo? (<Image source={logo} style={{width: logoWidth, height: logoHeight, resizeMode: "cover", overflow:"hidden"}}/>) : null}
-                    {disable?
-                        <TextInput underlineColorAndroid="transparent"
-                                   keyboardType={this.props.numeric ? "numeric" : "default"}
-                                   secureTextEntry={this.props.secureTextEntry}
-                                   maxLength={maxLength}
-                                   style={styles.textInput}
-                                   placeholder={name + " " + (objectNotNull(editValue) ? editValue : "")}
-                                   placeholderTextColor={appData.appSecondaryTextColor}
-                                   editable={disable}
-                                   onChangeText={(text) => {
-                                       this.props.callback(text, this.props.idKey);
-                                   }}
-                        >
-                        </TextInput>
+                    <Text style={styles.textLabel}>{name}</Text>
+                    {/*{editable ? null : <View style={{flex: 1}}/>}*/}
+                    {editable ? <TextInput underlineColorAndroid="transparent"
+                                           keyboardType={this.props.numeric ? "numeric" : "default"}
+                                           secureTextEntry={this.props.secureTextEntry}
+                                           maxLength={maxLength}
+                                           style={styles.textInput}
+                                           placeholder={objectNotNull(editValue) ? editValue : (objectNotNull(subName) ? subName : "" )}
+                                           placeholderTextColor={appData.appSecondaryTextColor}
+                                           editable={editable}
+                                           onChangeText={(text) => {
+                                               this.props.callback(text, this.props.idKey);
+                                           }} />
                     :
-                        <Text style={styles.textLabel}
-                        >{name}
-                        </Text>
-                    }
-                    {disable ? null : <View style={{flex: 1}}/>}
-                    {subName ? (<Text style={{flex: 1, minWidth:120, textAlign: 'right', color: "#000", fontSize:14}}>{subName}</Text>):null}
+                        <Text style={styles.textRight}>{subName}</Text>}
                     {avatar ? (<Image source={avatar} style={{width: 36, height: 36, resizeMode: "cover", overflow:"hidden", borderRadius: 18}}/>):null}
                     {this.props.children}
-                    {showArrowForward ? <appFont.Ionicons style={{marginLeft: 10, paddingRight: 16, opacity: disable ? 0.0 : 1.0}} name="ios-arrow-forward-outline" size={18} color= {hideArrowForward ? "#fff0" : "#bbb"} /> : null}
+                    {showArrowForward ? <appFont.Ionicons style={{marginLeft: 10, paddingRight: 16, opacity: editable ? 0.0 : 1.0}} name="ios-arrow-forward-outline" size={18} color= {hideArrowForward ? "#fff0" : "#bbb"} /> : null}
                 </View>
             </View>
         )
     }
     render(){
-        let { onPress, first, disable } = this.props;
+        let { onPress, first, editable } = this.props;
         onPress = onPress || (() => {});
-        return disable?
+        return editable?
             this._render():
             <Button style={{marginTop: first?10:0}} onPress={onPress}>{this._render()}</Button>
     }
@@ -97,9 +94,7 @@ export default class CustomItem extends Component {
 const styles = StyleSheet.create({
     listItem: {
         minHeight: itemHeight,
-        paddingLeft: 0,
         flexDirection: "row",
-        // justifyContent: "center",
         alignItems: "center"
     },
     textInput: {
@@ -108,12 +103,17 @@ const styles = StyleSheet.create({
         height: 30,
         fontSize: 14,
         paddingHorizontal: 10,
-        color: appData.appTextColor,
+        textAlign: 'right',
+    },
+    textRight: {
+        flex: 1,
+        minWidth:120,
+        textAlign: 'right',
+        fontSize:14
     },
     textLabel: {
         paddingVertical: 0,
         fontSize: 14,
         paddingHorizontal: 10,
-        color: appData.appTextColor,
     },
 });
