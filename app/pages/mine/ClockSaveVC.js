@@ -22,9 +22,9 @@ export default class UserInfoVC extends Component {
         super(props);
         this.state = {
             key: this.props.navigation.state.params.key,
-            index: this.props.navigation.state.params.index || -1,
-            time: new Date(),
-            status: 0x00,
+            index: objectNotNull(this.props.navigation.state.params.index) ? this.props.navigation.state.params.index : -1,
+            time: this.props.navigation.state.params.time || new Date(),
+            status: this.props.navigation.state.params.status || 0x00,
         };
 
         this.config = [

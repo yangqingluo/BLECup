@@ -4,21 +4,26 @@ import {
     Text,
     View,
     Image,
-    TouchableHighlight
+    TouchableHighlight,
 } from 'react-native';
 
-export default class ShipCell extends PureComponent<Props> {
+type Props = {
+    data: Object,
+    onPress: Function,
+}
+
+export default class ClockCell extends PureComponent<Props> {
     render() {
         let {data} = this.props;
         return (
             <TouchableHighlight
-                onPress={ _ => console.log('You touched me') }
+                onPress={this.props.onPress}
                 style={styles.rowFront}
-                underlayColor={'#AAA'}
+                underlayColor={appData.UnderlayColor}
             >
                 <View style={{justifyContent: "space-between"}}>
                     <View style={{paddingLeft: 10}}>
-                        <Text style={{fontSize: 24}}>{data.item.hour + ":" + data.item.minute}</Text>
+                        <Text style={{fontSize: 24}}>{data.item.hour.Prefix(2) + ":" + data.item.minute.Prefix(2)}</Text>
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>
                     </View>
                     <View>

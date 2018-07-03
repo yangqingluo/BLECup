@@ -51,25 +51,43 @@ export default class UserInfoVC extends Component {
         });
     }
 
-    closeRow(rowMap, rowKey) {
-        if (rowMap[rowKey]) {
-            rowMap[rowKey].closeRow();
+    onCellSelected = (data: Object) => {
+        let time = new Date();
+        time.setHours(data.item.hour);
+        time.setMinutes(data.item.minute);
+        this.props.navigation.navigate('ClockSave',
+            {
+                index: data.index,
+                time: time,
+                status: data.item.status,
+                callBack: this.callBackFromClockSaveVC.bind(this),
+            });
+    };
+
+    closeRow(rowMap, index) {
+        if (rowMap[index]) {
+            rowMap[index].closeRow();
         }
     }
 
-    deleteRow(rowMap, rowKey) {
-        this.closeRow(rowMap, rowKey);
+    deleteRow(rowMap, index) {
+        this.closeRow(rowMap, index);
         const newData = [...this.state.dataSource];
-        const prevIndex = this.state.dataSource.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        this.setState({dataSource: newData});
+        newData.splice(index, 1);
+
+        let data = userData;
+        data.clocks = newData;
+        saveUserData(data);
+        this.setState({
+            dataSource: userData.clocks,
+        });
     }
 
-    onRowDidOpen = (rowKey, rowMap) => {
-        console.log('This row opened', rowKey);
-        setTimeout(() => {
-            this.closeRow(rowMap, rowKey);
-        }, 2000);
+    _renderCell = (data, rowMap) => {
+        return (
+            <ClockCell data={data}
+                       onPress={this.onCellSelected.bind(this, data)}/>
+        )
     };
 
     render() {
@@ -79,22 +97,20 @@ export default class UserInfoVC extends Component {
                     useFlatList
                     style={styles.container}
                     data={this.state.dataSource}
-                    renderItem={(data) => (
-                        <ClockCell data={data} />
-                    )}
+                    renderItem={this._renderCell}
                     renderHiddenItem={(data, rowMap) => (
                         <View style={styles.rowBack}>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ (_) => this.closeRow(rowMap, data.item.key) }>
-                                <Text style={styles.backTextWhite}>Close</Text>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ (_) => this.closeRow(rowMap, data.index) }>
+                                <Text style={styles.backTextWhite}>编辑</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.item.key) }>
-                                <Text style={styles.backTextWhite}>Delete</Text>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
+                                <Text style={styles.backTextWhite}>删除</Text>
                             </TouchableOpacity>
                         </View>
                     )}
                     keyExtractor={(item: Object, index: number) => ('' + index)}
                     rightOpenValue={-2 * appData.DefaultOpenValue}
-                    onRowDidOpen={this.onRowDidOpen}
+                    // onRowDidOpen={this.onRowDidOpen}
                 />
             </View>
         );

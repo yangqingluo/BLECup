@@ -6,13 +6,6 @@ import {
     CheckBox,
     TouchableOpacity
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-
-const Font = {
-    Ionicons,
-    FontAwesome
-};
 
 type Props = {
     info: Object,
@@ -24,13 +17,12 @@ export default class SelectTextCell extends PureComponent<Props> {
 
     render() {
         let {info, selected} = this.props;
-        const Icon = Font["Ionicons"];
         return (
             <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(info)}>
                 <View style={styles.rightContainer}>
                     <Text style={{color:selected ? appData.BlueColor : appData.SecondaryTextColor}}>{info.item}</Text>
                 </View>
-                <Icon name={'ios-checkmark-circle'}
+                <appFont.Ionicons name={'ios-checkmark-circle'}
                       size={20}
                       style={{width: 22, marginRight:5, textAlign:"center"}}
                       color={selected ? appData.BlueColor : appData.GrayColor} />
