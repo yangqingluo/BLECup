@@ -12,7 +12,7 @@ const {width, height}=Dimensions.get('window');
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-Date.prototype.pattern=function(fmt) {
+Date.prototype.Format = function(fmt) {
     let o = {
         "M+" : this.getMonth() + 1, //月份
         "d+" : this.getDate(), //日
@@ -46,22 +46,6 @@ Date.prototype.pattern=function(fmt) {
     return fmt;
 };
 
-Date.prototype.Format = function (fmt) {
-    let o = {
-        "M+": this.getMonth() + 1, //月份
-        "d+": this.getDate(), //日
-        "h+": this.getHours(), //小时
-        "m+": this.getMinutes(), //分
-        "s+": this.getSeconds(), //秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (let k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-};
-
 Number.prototype.Format = function (n) : String {
     let s = this;
     if(s === '')
@@ -78,31 +62,13 @@ Number.prototype.Format = function (n) : String {
 };
 
 global.storage = new Storage({
-    // 最大容量，默认值1000条数据循环存储
-    size: 1000,
-
-    // 存储引擎：对于RN使用AsyncStorage，对于web使用window.localStorage
-    // 如果不指定则数据只会保存在内存中，重启后即丢失
-    storageBackend: AsyncStorage,
-
-    // 数据过期时间，设为null则永不过期
-    defaultExpires: null,
-
-    // 读写时在内存中缓存数据。默认启用。
-    enableCache: true,
-
-    // 如果storage中没有相应数据，或数据已过期，
-    // 则会调用相应的sync方法，无缝返回最新数据。
-    // sync方法的具体说明会在后文提到
-    // 你可以在构造函数这里就写好sync的方法
-    // 或是写到另一个文件里，这里require引入
-    // 或是在任何时候，直接对storage.sync进行赋值修改
-    // sync: require('./sync') // 这个sync文件是要你自己写的
+    size: 1000,// 最大容量，默认值1000条数据循环存储
+    storageBackend: AsyncStorage,// 存储引擎：对于RN使用AsyncStorage，对于web使用window.localStorage 如果不指定则数据只会保存在内存中，重启后即丢失
+    defaultExpires: null,// 数据过期时间，设为null则永不过期
+    enableCache: true,// 读写时在内存中缓存数据。默认启用。
 });
 
-//用户登录数据
 global.userData = {};
-//刷新的时候重新获得用户数据
 storage.load({
     key: 'userData',
 }).then(ret => {
@@ -158,6 +124,7 @@ global.appData = {
     BorderColor: '#e0e0e0',
     SeparatorColor: '#c0c0c099',
     SeparatorLightColor: '#c0c0c020',
+    ArrowForwardColor: '#bbb',
 
     ItemPaddingLeft: 16,
     DashWidth: 4.0,
@@ -167,6 +134,7 @@ global.appData = {
     MaxImageUploadNumber: 5,
 
     ItemHeight: 50,
+    ItemMiddleHeight: 80,
     SeparatorHeight: 1,
 
     MaxLengthInput: 100,
@@ -177,6 +145,7 @@ global.appData = {
     MaxLengthPassword: 20,
 
     OnEndReachedThreshold: 0.1,
+    DefaultOpenValue: 75,
 };
 
 global.appStyles = StyleSheet.create({
@@ -202,6 +171,39 @@ global.appStyles = StyleSheet.create({
         borderWidth: 1,
     },
 });
+
+global.weekCourseTypes = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+global.createRepeatString = function(status : Number) : String {
+    let m_status = (status | 0x01);
+    switch (m_status) {
+        case 0xff:
+            return "每天";
+
+        case 0x3f:
+            return "工作日";
+
+        case 0xc1:
+            return "周末";
+
+        case 0x01:
+            return "不重复";
+
+        default: {
+            let array = [];
+            for (let i = 0; i < weekCourseTypes.length; i++) {
+                let repeat = Math.pow(2, i + 1);
+                if ((m_status & repeat) === repeat) {
+                    array.push(weekCourseTypes[i]);
+                }
+            }
+            return array.join(" ");
+        }
+    }
+};
+
+global.clockIsOpen = function(status : Number) : boolean {
+    return (status & 0x01) === 0x01;
+};
 
 global.appFont = {
     Ionicons,
@@ -265,8 +267,8 @@ global.stringIsEmpty = function(object) : boolean {
 global.createTimeFormat = function(time, format) : String {
     if (time !== null) {
         let date = new Date(parseFloat(time) * 1000);
-        // date.setTime(time * 1000);
-        return date.pattern(format);
+        // time.setTime(time * 1000);
+        return date.Format(format);
     }
     return "1970-01-01";
 };
@@ -299,4 +301,12 @@ export const imagePickerOptions = {
     storageOptions: {
         skipBackup: true
     }
+};
+
+global.renderSeparator = () => {
+    return <View style={{height:appData.SeparatorHeight, backgroundColor:appData.SeparatorColor}}/>;
+};
+
+global.renderSubSeparator = () => {
+    return <View style={{marginLeft:80, height:appData.SeparatorHeight, backgroundColor:appData.SeparatorColor}}/>;
 };

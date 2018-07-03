@@ -57,8 +57,8 @@ export default class CustomItem extends Component {
         let {logo, iconSize, logoWidth, logoHeight, name, subName, editValue, color, noSeparator, avatar, editable, font, showArrowForward, hideArrowForward, maxLength} = this.props;
         let radius = 12;
         return (
-            <View style={{flexDirection: "column"}}>
-                {noSeparator ? null : <View style={{height: appData.SeparatorHeight, backgroundColor: appData.SeparatorLightColor}}/>}
+            <View style={{flexDirection: "column", borderBottomColor: appData.SeparatorLightColor, borderBottomWidth: appData.SeparatorHeight}}>
+                {/*{noSeparator ? null : <View style={{height: appData.SeparatorHeight, backgroundColor: appData.SeparatorLightColor}}/>}*/}
                 <View style={styles.listItem} {...this.props}>
                     {logo? (<Image source={logo} style={{width: logoWidth, height: logoHeight, resizeMode: "cover", overflow:"hidden"}}/>) : null}
                     <Text style={styles.textLabel}>{name}</Text>
@@ -70,7 +70,7 @@ export default class CustomItem extends Component {
                                            style={styles.textInput}
                                            // defaultValue={editValue}//会导致ios原生中文无法输入
                                            placeholder={objectNotNull(editValue) ? editValue : (objectNotNull(subName) ? subName : "" )}
-                                           placeholderTextColor={appData.appSecondaryTextColor}
+                                           placeholderTextColor={appData.SecondaryTextColor}
                                            editable={editable}
                                            onChangeText={(text) => {
                                                this.props.callback(text, this.props.idKey);
@@ -79,7 +79,7 @@ export default class CustomItem extends Component {
                         <Text style={styles.textRight}>{subName}</Text>}
                     {avatar ? (<Image source={avatar} style={{width: 36, height: 36, resizeMode: "cover", overflow:"hidden", borderRadius: 18}}/>):null}
                     {this.props.children}
-                    {showArrowForward ? <appFont.Ionicons style={{marginLeft: 10, paddingRight: 16, opacity: editable ? 0.0 : 1.0}} name="ios-arrow-forward-outline" size={18} color= {hideArrowForward ? "#fff0" : "#bbb"} /> : null}
+                    {showArrowForward ? <appFont.Ionicons style={{marginLeft: 10, paddingRight: 16, opacity: editable ? 0.0 : 1.0}} name="ios-arrow-forward-outline" size={18} color= {hideArrowForward ? "#fff0" : appData.ArrowForwardColor} /> : null}
                 </View>
             </View>
         )

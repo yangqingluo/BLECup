@@ -142,38 +142,38 @@ export default class BleModule{
         for(let item of peripheralInfo.characteristics){      
             item.service = this.fullUUID(item.service);
             item.characteristic = this.fullUUID(item.characteristic);
-            if(Platform.OS == 'android'){  
-                if(item.properties.Notify == 'Notify'){
+            if(Platform.OS === 'android'){  
+                if(item.properties.Notify === 'Notify'){
                     this.nofityServiceUUID.push(item.service);
                     this.nofityCharacteristicUUID.push(item.characteristic);
                 }
-                if(item.properties.Read == 'Read'){
+                if(item.properties.Read === 'Read'){
                     this.readServiceUUID.push(item.service);
                     this.readCharacteristicUUID.push(item.characteristic);
                 }
-                if(item.properties.Write == 'Write'){
+                if(item.properties.Write === 'Write'){
                     this.writeWithResponseServiceUUID.push(item.service);
                     this.writeWithResponseCharacteristicUUID.push(item.characteristic);
                 }
-                if(item.properties.WriteWithoutResponse == 'WriteWithoutResponse'){
+                if(item.properties.WriteWithoutResponse === 'WriteWithoutResponse'){
                     this.writeWithoutResponseServiceUUID.push(item.service);
                     this.writeWithoutResponseCharacteristicUUID.push(item.characteristic);
                 }                    
             }else{  //ios
                 for(let property of item.properties){
-                    if(property == 'Notify'){
+                    if(property === 'Notify'){
                         this.nofityServiceUUID.push(item.service);
                         this.nofityCharacteristicUUID.push(item.characteristic);
                     }
-                    if(property == 'Read'){
+                    if(property === 'Read'){
                         this.readServiceUUID.push(item.service);
                         this.readCharacteristicUUID.push(item.characteristic);
                     }
-                    if(property == 'Write'){
+                    if(property === 'Write'){
                         this.writeWithResponseServiceUUID.push(item.service);
                         this.writeWithResponseCharacteristicUUID.push(item.characteristic);
                     }
-                    if(property == 'WriteWithoutResponse'){
+                    if(property === 'WriteWithoutResponse'){
                         this.writeWithoutResponseServiceUUID.push(item.service);
                         this.writeWithoutResponseCharacteristicUUID.push(item.characteristic);
                     }                        
@@ -470,7 +470,7 @@ export default class BleModule{
             return;
         }
         macAddressInAdvertising = macAddressInAdvertising.replace("<","").replace(">","").replace(" ","");
-        if(macAddressInAdvertising != undefined && macAddressInAdvertising != null && macAddressInAdvertising != '') {
+        if(macAddressInAdvertising !== undefined && macAddressInAdvertising !== null && macAddressInAdvertising !== '') {
             macAddressInAdvertising = this.swapEndianWithColon(macAddressInAdvertising);
         }
         return macAddressInAdvertising;
@@ -486,7 +486,7 @@ export default class BleModule{
 		let len = str.length;
 		for(let j = 2; j <= len; j = j + 2){
 			format += str.substring(len-j, len-(j-2));
-			if(j != len) {
+			if(j !== len) {
 				format += ":";
 			}
 		}

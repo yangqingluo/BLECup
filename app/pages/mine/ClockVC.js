@@ -17,18 +17,38 @@ import {
 } from 'react-native';
 import CustomItem from '../../components/CustomItem';
 import { SwipeListView, SwipeRow } from '../../components/swipelist';
+import ClockCell from '../../components/ClockCell';
 
 export default class UserInfoVC extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: "闹钟",
+        headerRight: <TouchableOpacity style={{minHeight:40, justifyContent: "center"}} onPress={navigation.state.params.clickSureBtn}>
+            <Text style={{marginRight: 10, color: appData.BlueColor}}>{'  添加  '}</Text>
+        </TouchableOpacity>,
     });
 
     constructor(props) {
         super(props);
-        this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            listViewData: Array(20).fill('').map((_,i) => ({key: `${i}`, text: `item #${i}`})),
+            dataSource: userData.clocks,
+            // dataSource: Array(20).fill('').map((_, i) => ({key: `${100 + i}`, text: `item #${i}`})),
         };
+    }
+
+    componentDidMount() {
+        this.props.navigation.setParams({clickSureBtn:this.sureBtnClick});
+    }
+
+    sureBtnClick = () => {
+        this.props.navigation.navigate("ClockSave", {
+            callBack: this.callBackFromClockSaveVC.bind(this),
+        });
+    };
+
+    callBackFromClockSaveVC(time, status) {
+        this.setState({
+            dataSource: userData.clocks,
+        });
     }
 
     closeRow(rowMap, rowKey) {
@@ -39,10 +59,10 @@ export default class UserInfoVC extends Component {
 
     deleteRow(rowMap, rowKey) {
         this.closeRow(rowMap, rowKey);
-        const newData = [...this.state.listViewData];
-        const prevIndex = this.state.listViewData.findIndex(item => item.key === rowKey);
+        const newData = [...this.state.dataSource];
+        const prevIndex = this.state.dataSource.findIndex(item => item.key === rowKey);
         newData.splice(prevIndex, 1);
-        this.setState({listViewData: newData});
+        this.setState({dataSource: newData});
     }
 
     onRowDidOpen = (rowKey, rowMap) => {
@@ -58,22 +78,13 @@ export default class UserInfoVC extends Component {
                 <SwipeListView
                     useFlatList
                     style={styles.container}
-                    data={this.state.listViewData}
-                    renderItem={ (data, rowMap) => (
-                        <TouchableHighlight
-                            onPress={ _ => console.log('You touched me') }
-                            style={styles.rowFront}
-                            underlayColor={'#AAA'}
-                        >
-                            <View>
-                                <Text>I am {data.item.text} in a SwipeListView</Text>
-                            </View>
-                        </TouchableHighlight>
+                    data={this.state.dataSource}
+                    renderItem={(data) => (
+                        <ClockCell data={data} />
                     )}
-                    renderHiddenItem={ (data, rowMap) => (
+                    renderHiddenItem={(data, rowMap) => (
                         <View style={styles.rowBack}>
-                            <Text>Left</Text>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.closeRow(rowMap, data.item.key) }>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ (_) => this.closeRow(rowMap, data.item.key) }>
                                 <Text style={styles.backTextWhite}>Close</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.item.key) }>
@@ -81,8 +92,8 @@ export default class UserInfoVC extends Component {
                             </TouchableOpacity>
                         </View>
                     )}
-                    // leftOpenValue={75}
-                    rightOpenValue={-150}
+                    keyExtractor={(item: Object, index: number) => ('' + index)}
+                    rightOpenValue={-2 * appData.DefaultOpenValue}
                     onRowDidOpen={this.onRowDidOpen}
                 />
             </View>

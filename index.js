@@ -5,11 +5,19 @@ import './app/util/Global';
 import MainTab from './app/pages/MainTab';
 import UserInfoVC from './app/pages/mine/UserInfoVC';
 import ClockVC from './app/pages/mine/ClockVC';
+import ClockSaveVC from './app/pages/mine/ClockSaveVC';
+import ClockRepeatVC from './app/pages/mine/ClockRepeatVC';
+
+import SelectTextVC from './app/components/SelectTextVC';
 
 const MyNavigator = StackNavigator({
         MainTab:{screen: MainTab},
         UserInfo:{screen: UserInfoVC},
         Clock:{screen: ClockVC},
+        ClockSave:{screen: ClockSaveVC},
+        ClockRepeat:{screen: ClockRepeatVC},
+
+        SelectText:{screen: SelectTextVC},
     },
     {
         navigationOptions: {
