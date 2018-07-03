@@ -114,16 +114,17 @@ export default class UserInfoVC extends Component {
                     renderItem={this._renderCell}
                     renderHiddenItem={(data, rowMap) => (
                         <View style={styles.rowBack}>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ (_) => this.closeRow(rowMap, data.index) }>
-                                <Text style={styles.backTextWhite}>编辑</Text>
-                            </TouchableOpacity>
+                            {/*<TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ (_) => this.closeRow(rowMap, data.index) }>*/}
+                                {/*<Text style={styles.backTextWhite}>编辑</Text>*/}
+                            {/*</TouchableOpacity>*/}
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
                                 <Text style={styles.backTextWhite}>删除</Text>
                             </TouchableOpacity>
                         </View>
                     )}
                     keyExtractor={(item: Object, index: number) => ('' + index)}
-                    rightOpenValue={-2 * appData.DefaultOpenValue}
+                    disableRightSwipe={true}
+                    rightOpenValue={-1 * appData.DefaultOpenValue}
                     // onRowDidOpen={this.onRowDidOpen}
                 />
             </View>
