@@ -3,6 +3,7 @@ import {
     StyleSheet,
     Text,
     View,
+    Switch,
     Image,
     TouchableHighlight,
 } from 'react-native';
@@ -17,16 +18,18 @@ export default class ClockCell extends PureComponent<Props> {
         let {data} = this.props;
         return (
             <TouchableHighlight
-                onPress={this.props.onPress}
+                onPress={() => this.props.onCellSelected(data)}
                 style={styles.rowFront}
                 underlayColor={appData.UnderlayColor}
             >
-                <View style={{justifyContent: "space-between"}}>
-                    <View style={{paddingLeft: 10}}>
+                <View style={{paddingHorizontal: 10, flexDirection: 'row', justifyContent: "space-between"}}>
+                    <View style={styles.rowItem}>
                         <Text style={{fontSize: 24}}>{data.item.hour.Prefix(2) + ":" + data.item.minute.Prefix(2)}</Text>
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>
                     </View>
-                    <View>
+                    <View style={styles.rowItem}>
+                        <Switch value={clockIsOpen(data.item.status)}
+                                onValueChange={(value) => this.props.onCellValueChange(data, value)}/>
                     </View>
                 </View>
             </TouchableHighlight>
@@ -42,4 +45,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         minHeight: appData.ItemMiddleHeight,
     },
+    rowItem: {
+        justifyContent: "center",
+    }
 });

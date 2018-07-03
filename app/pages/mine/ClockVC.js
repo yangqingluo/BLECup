@@ -51,7 +51,7 @@ export default class UserInfoVC extends Component {
         });
     }
 
-    onCellSelected = (data: Object) => {
+    onCellSelected(data: Object) {
         let time = new Date();
         time.setHours(data.item.hour);
         time.setMinutes(data.item.minute);
@@ -63,6 +63,19 @@ export default class UserInfoVC extends Component {
                 callBack: this.callBackFromClockSaveVC.bind(this),
             });
     };
+
+    onCellValueChange(data: Object, value: boolean) {
+        if (value) {
+            userData.clocks[data.index].status |= 0x01;
+        }
+        else {
+            userData.clocks[data.index].status &= 0xfe;
+        }
+        saveUserData(userData);
+        this.setState({
+            dataSource: userData.clocks,
+        });
+    }
 
     closeRow(rowMap, index) {
         if (rowMap[index]) {
@@ -86,7 +99,8 @@ export default class UserInfoVC extends Component {
     _renderCell = (data, rowMap) => {
         return (
             <ClockCell data={data}
-                       onPress={this.onCellSelected.bind(this, data)}/>
+                       onCellSelected={this.onCellSelected.bind(this)}
+                       onCellValueChange={this.onCellValueChange.bind(this)}/>
         )
     };
 
@@ -121,24 +135,6 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex: 1
-    },
-    standalone: {
-        marginTop: 30,
-        marginBottom: 30,
-    },
-    standaloneRowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        justifyContent: 'center',
-        height: 50,
-    },
-    standaloneRowBack: {
-        alignItems: 'center',
-        backgroundColor: '#8BC645',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 15
     },
     backTextWhite: {
         color: '#FFF'
@@ -175,20 +171,4 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
         right: 0
     },
-    controls: {
-        alignItems: 'center',
-        marginBottom: 30
-    },
-    switchContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 5
-    },
-    switch: {
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'black',
-        paddingVertical: 10,
-        width: Dimensions.get('window').width / 4,
-    }
 });

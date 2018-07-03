@@ -24,7 +24,7 @@ export default class UserInfoVC extends Component {
             key: this.props.navigation.state.params.key,
             index: objectNotNull(this.props.navigation.state.params.index) ? this.props.navigation.state.params.index : -1,
             time: this.props.navigation.state.params.time || new Date(),
-            status: this.props.navigation.state.params.status || 0x00,
+            status: this.props.navigation.state.params.status || 0x01,
         };
 
         this.config = [
