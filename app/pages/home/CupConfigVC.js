@@ -3,6 +3,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    ScrollView,
     View,
     FlatList,
     Platform,
@@ -136,12 +137,10 @@ export default class HomeVC extends Component {
     renderFooter = () => {
         return(
             <View style={{marginBottom:30}}>
-                <View>
-                    {this.renderWriteView('写数据(write)：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
-                    {this.renderWriteView('写数据(writeWithoutResponse)：','发送',BluetoothManager.writeWithoutResponseCharacteristicUUID,this.writeWithoutResponse,this.state.writeData)}
-                    {this.renderReceiveView('读取的数据：','读取',BluetoothManager.readCharacteristicUUID,this.read,this.state.readData)}
-                    {this.renderReceiveView('通知监听接收的数据：'+`${this.state.isMonitoring?'监听已开启':'监听未开启'}`,'开启通知',BluetoothManager.nofityCharacteristicUUID,this.notify,this.state.receiveData)}
-                </View>
+                {this.renderWriteView('写数据(write)：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
+                {this.renderWriteView('写数据(writeWithoutResponse)：','发送',BluetoothManager.writeWithoutResponseCharacteristicUUID,this.writeWithoutResponse,this.state.writeData)}
+                {this.renderReceiveView('读取的数据：','读取',BluetoothManager.readCharacteristicUUID,this.read,this.state.readData)}
+                {this.renderReceiveView('通知监听接收的数据：'+`${this.state.isMonitoring?'监听已开启':'监听未开启'}`,'开启通知',BluetoothManager.nofityCharacteristicUUID,this.notify,this.state.receiveData)}
             </View>
         )
     };
@@ -176,7 +175,7 @@ export default class HomeVC extends Component {
             return;
         }
         return(
-            <View style={{marginHorizontal:10,marginTop:30}} behavior='padding'>
+            <View style={{marginHorizontal:10, marginTop:30}} behavior='padding'>
                 <Text style={{color:'black'}}>{label}</Text>
                 <Text style={styles.content}>
                     {this.state.writeData}
@@ -193,7 +192,7 @@ export default class HomeVC extends Component {
                     )
                 })}
                 <TextInput
-                    style={[styles.textInput]}
+                    style={styles.textInput}
                     value={this.state.text}
                     placeholder='请输入消息'
                     onChangeText={(text)=>{
@@ -206,11 +205,11 @@ export default class HomeVC extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 {this.renderFooter()}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
-            </View>
+            </ScrollView>
         )
     }
 }
