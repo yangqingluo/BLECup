@@ -1,6 +1,3 @@
-/**
- * Created by guang on 2016/11/21.
- */
 import {
     Platform,
     NativeModules,
@@ -61,7 +58,7 @@ export default class BleModule{
      * */
     scan() {
         return new Promise( (resolve, reject) =>{
-            BleManager.scan(["6E400001-B5A3-F393-E0A9-E50E24DCCAAA"], 0.5, true)
+            BleManager.scan([serviceUUID], 5, true)
                 .then( () => {
                     console.log('Scan started');
                     resolve();

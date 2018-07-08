@@ -10,6 +10,8 @@ import {
     Dimensions,
     Alert,
 } from 'react-native'
+import IndicatorModal from '../../components/IndicatorModal';
+import Toast from "react-native-easy-toast";
 
 export default class HomeVC extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -71,6 +73,11 @@ export default class HomeVC extends Component {
     };
 
     connect(item){
+        if (stringIsEmpty(item.item.name) || item.item.name !== "Smart Cup") {
+            PublicAlert("设备异常", "请选择其他设备");
+            return;
+        }
+
         //当前蓝牙正在连接时不能打开另一个连接进程
         if(BluetoothManager.isConnecting){
             console.log('当前蓝牙正在连接时不能打开另一个连接进程');
@@ -80,6 +87,7 @@ export default class HomeVC extends Component {
             BluetoothManager.stopScan();
             this.setState({scanning:false});
         }
+
         let newData = [...this.deviceMap.values()];
         newData[item.index].isConnecting = true;
         this.setState({data:newData});
@@ -101,7 +109,7 @@ export default class HomeVC extends Component {
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;
                 this.setState({data:newData});
-                this.alert('连接失败');
+                PublicAlert('连接失败');
             })
     }
 
@@ -126,9 +134,9 @@ export default class HomeVC extends Component {
         else {
             BluetoothManager.checkState();
             if(Platform.OS === 'ios'){
-                this.alert('请开启手机蓝牙');
+                PublicAlert('请开启手机蓝牙');
             } else {
-                Alert.alert('提示','请开启手机蓝牙',[
+                PublicAlert('提示','请开启手机蓝牙',[
                     {
                         text:'取消',
                         onPress:()=>{ }
@@ -151,7 +159,6 @@ export default class HomeVC extends Component {
                 style={styles.item}>
                 <View style={{flexDirection:'row',}}>
                     <Text style={{color:'black'}}>{data.name ? data.name : ''}</Text>
-                    <Text style={{marginLeft:50,color:"red"}}>{data.isConnecting?'连接中...':''}</Text>
                 </View>
                 <Text>{data.id}</Text>
             </TouchableOpacity>
@@ -165,7 +172,7 @@ export default class HomeVC extends Component {
                     activeOpacity={0.7}
                     style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
                     onPress={this.startScan.bind(this)}>
-                    <Text style={styles.buttonText}>{this.state.scanning ? '正在搜索中' : '搜索蓝牙'}</Text>
+                    <Text style={styles.buttonText}>{this.state.scanning ? '正在搜索中' : '搜索水杯'}</Text>
                 </TouchableOpacity>
 
                 <Text style={{marginLeft:10,marginTop:10}}>
@@ -186,6 +193,8 @@ export default class HomeVC extends Component {
                     extraData={[this.state.scanning]}
                     keyboardShouldPersistTaps='handled'
                 />
+                <Toast ref={o => this.refToast = o} position={'center'}/>
+                <IndicatorModal ref={o => this.refIndicator = o}/>
             </View>
         )
     }

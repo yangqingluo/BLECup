@@ -77,15 +77,17 @@ export default class HomeVC extends Component {
     };
 
     write=(index)=>{
-        if(this.state.text.length === 0){
+        // let {text} = this.state;
+        let text = "0D0A050100";
+        if(text.length === 0){
             this.alert('请输入消息');
             return;
         }
-        BluetoothManager.write(this.state.text,index)
+        BluetoothManager.write(text, index)
             .then(()=>{
                 this.bluetoothReceiveData = [];
                 this.setState({
-                    writeData:this.state.text,
+                    writeData:text,
                     text:'',
                 })
             })
