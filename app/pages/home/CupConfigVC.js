@@ -75,6 +75,7 @@ export default class HomeVC extends Component {
         else {
             this.notify(this.notifyIndex);
             this.doReadTemperature();
+            this.doReadPower();
         }
     }
 
@@ -92,6 +93,11 @@ export default class HomeVC extends Component {
 
     doReadTemperature() {
         let data = "0D0A050100";
+        this.doWriteData(this.writeIndex, data);
+    }
+
+    doReadPower() {
+        let data = "0D0A050201";
         this.doWriteData(this.writeIndex, data);
     }
 
@@ -119,11 +125,11 @@ export default class HomeVC extends Component {
         if (value.length >= 5) {
             let header = value[0] + "" + value[1];
             let length = parseInt(value[2]);
-            if (header.toUpperCase() === "1310" && length === value.length) {
+            if (header.toUpperCase() === "1310" && length <= value.length) {
                 let ID = value[3];
                 let cmd = parseInt(value[4]);
                 switch (cmd) {
-                    case CMDType.ReadTemperature:{
+                    case CMDType.ReadTemperature: {
                         if (length >= 7) {
                             this.setState({
                                 temperatureAir: value[5],
@@ -135,6 +141,16 @@ export default class HomeVC extends Component {
                                 temperatureWater: value[5],
                             });
                         }
+                        break;
+                    }
+
+                    case CMDType.ReadPower: {
+                        if (length >= 6) {
+                            this.setState({
+                                power: value[5],
+                            });
+                        }
+                        break;
                     }
                 }
             }
@@ -301,7 +317,7 @@ export default class HomeVC extends Component {
             return this.state.temperatureWater + " ℃";
         }
         else if (item.idKey === "Power") {
-            return this.state.power + "";
+            return this.state.power + " %";
         }
     }
 
