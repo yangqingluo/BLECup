@@ -11,6 +11,7 @@ const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 export default class BleModule{
     constructor(){
+        this.sendCount = 0;
 	    this.isConnecting = false;  //蓝牙是否连接
         this.bluetoothState = 'off';   //蓝牙打开状态	  
         this.initUUID();
@@ -268,7 +269,7 @@ export default class BleModule{
      * Write with response to the specified characteristic, you need to call retrieveServices method before. 
      * */
 	write(data,index = 0) {
-        // data = this.addProtocol(data);   //在数据的头尾加入协议格式，如0A => FEFD010AFCFB，不同的蓝牙协议应作相应的更改
+        data = this.addProtocol(data);   //在数据的头尾加入协议格式，如0A => FEFD010AFCFB，不同的蓝牙协议应作相应的更改
         return new Promise( (resolve, reject) =>{
             BleManager.write(this.peripheralId, this.writeWithResponseServiceUUID[index], this.writeWithResponseCharacteristicUUID[index], data)
                 .then(() => {
@@ -434,7 +435,8 @@ export default class BleModule{
      * 添加蓝牙协议格式，包头、数据长度、包尾，不同的蓝牙协议应作相应的更改
      * */
     addProtocol(data){
-        return 'FEFD' + this.getHexByteLength(data) + data;
+        data = numberToHex(this.sendCount++) + data;
+        return '0D0A' + this.getHexByteLength(data) + data;
     }
 
 	/** 

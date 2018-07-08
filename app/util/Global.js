@@ -120,6 +120,12 @@ global.notifyUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCAAA";
 global.CMDType = {
     ReadTemperature: 0x00,//读取水温
     ReadPower:       0x01,//读取电量
+    AddClock:        0x02,//增加闹钟
+    RemoveClock:     0x03,//删除闹钟
+    EditClock:       0x04,//编辑闹钟
+    ReadClock:       0x05,//读取闹钟
+    SyncTime:        0x06,//同步时间
+    FindCup:         0x07,//寻找水杯
 };
 
 global.appData = {
@@ -237,6 +243,19 @@ global.appUrl = 'http://shiphire.com.cn/';
 global.appUndefined =  'undefined';
 global.appHomeVC = null;
 global.appMineVC = null;
+
+global.makeUpZero = function(str, bit = 2) : String {
+    for(let i = str.length; i < bit; i++){
+        str = '0' + str;
+    }
+    return str;
+};
+
+global.numberToHex = function(number : Number, byteCount = 1) : String {
+    let n = number % Math.pow(256, byteCount);
+    let string = n.toString(16).toUpperCase();
+    return global.makeUpZero(string, byteCount * 2);
+};
 
 global.judgeMobilePhone = function(object : String) : boolean {
     // /^1[3|4|5|7|8][0-9]{9}$/

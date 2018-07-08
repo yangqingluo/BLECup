@@ -40,6 +40,7 @@ export default class HomeVC extends Component {
         this.config = [
             {idKey:"Temperature", name:"水温", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Temperature")},
             {idKey:"Power", name:"电量", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Power")},
+            {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
         ];
     }
 
@@ -92,12 +93,12 @@ export default class HomeVC extends Component {
     }
 
     doReadTemperature() {
-        let data = "0D0A050100";
+        let data = numberToHex(CMDType.ReadTemperature);
         this.doWriteData(this.writeIndex, data);
     }
 
     doReadPower() {
-        let data = "0D0A050201";
+        let data = numberToHex(CMDType.ReadPower);
         this.doWriteData(this.writeIndex, data);
     }
 
@@ -152,6 +153,11 @@ export default class HomeVC extends Component {
                         }
                         break;
                     }
+
+                    case CMDType.FindCup: {
+                        PublicAlert("寻找水杯", "我在这里！");
+                        break;
+                    }
                 }
             }
         }
@@ -181,13 +187,16 @@ export default class HomeVC extends Component {
             })
     };
 
-    doWriteData(index, data) {
+    doWriteData(index, data, showResponse = false) {
         if(stringIsEmpty(data)){
             this.alert('发送数据不能为空');
             return;
         }
         BluetoothManager.write(data, index)
             .then(()=>{
+                if (showResponse) {
+                    this.alert("发送成功");
+                }
                 this.bluetoothReceiveData = [];
                 this.setState({
                     writeData:data,
@@ -309,7 +318,9 @@ export default class HomeVC extends Component {
 
 
     cellSelected(key, data = {}){
-
+        if (key === "Find") {
+            this.doWriteData(this.writeIndex, CMDType.FindCup, true);
+        }
     }
 
     _renderSubNameForIndex(item, index) {
