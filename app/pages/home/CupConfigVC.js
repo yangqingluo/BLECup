@@ -40,6 +40,7 @@ export default class HomeVC extends Component {
         this.config = [
             {idKey:"Temperature", name:"水温", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Temperature")},
             {idKey:"Power", name:"电量", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Power")},
+            {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
         ];
     }
@@ -94,12 +95,12 @@ export default class HomeVC extends Component {
 
     doReadTemperature() {
         let data = numberToHex(CMDType.ReadTemperature);
-        this.doWriteData(this.writeIndex, data);
+        this.doWriteData(data);
     }
 
     doReadPower() {
         let data = numberToHex(CMDType.ReadPower);
-        this.doWriteData(this.writeIndex, data);
+        this.doWriteData(data);
     }
 
     //蓝牙设备已连接
@@ -154,8 +155,13 @@ export default class HomeVC extends Component {
                         break;
                     }
 
+                    case CMDType.SyncTime: {
+                        PublicAlert("同步时间", "同步时间完成");
+                        break;
+                    }
+
                     case CMDType.FindCup: {
-                        PublicAlert("寻找水杯", "我在这里！");
+                        PublicAlert("寻找水杯", "寻找水杯完成");
                         break;
                     }
                 }
@@ -187,7 +193,7 @@ export default class HomeVC extends Component {
             })
     };
 
-    doWriteData(index, data, showResponse = false) {
+    doWriteData(data, showResponse = false, index = this.writeIndex) {
         if(stringIsEmpty(data)){
             this.alert('发送数据不能为空');
             return;
@@ -317,9 +323,20 @@ export default class HomeVC extends Component {
     };
 
 
-    cellSelected(key, data = {}){
-        if (key === "Find") {
-            this.doWriteData(this.writeIndex, CMDType.FindCup, true);
+    cellSelected(key, data = {}) {
+        if (key === "SyncTime") {
+            let time = Date.parse(new Date()) * 0.001;
+            let data = numberToHex(CMDType.SyncTime)
+                + numberToHex(time & 0x000000ff)
+                + numberToHex((time & 0x0000ff00) >> 8)
+                + numberToHex((time & 0x00ff0000) >> 16)
+                + numberToHex((time & 0xff000000) >> 24);
+            // PublicAlert(time + "***" + data);
+            this.doWriteData(data);
+        }
+        else if (key === "Find") {
+            let data = numberToHex(CMDType.FindCup);
+            this.doWriteData(data);
         }
     }
 
