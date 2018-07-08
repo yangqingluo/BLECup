@@ -120,9 +120,11 @@ export default class HomeVC extends Component {
     handleUpdateValue = (data) => {
         //接收到的value按字节以逗号分隔
         let value = data.value;
-        // this.bluetoothReceiveData.push(value);
-        // console.log('BluetoothUpdateValue', value);
-        // this.setState({receiveData:this.bluetoothReceiveData.join('')});
+        this.bluetoothReceiveData.push(value);
+        console.log('BluetoothUpdateValue', value);
+        this.setState({receiveData:this.bluetoothReceiveData.join('')});
+
+        // PublicAlert(JSON.stringify(value));
 
         if (value.length >= 5) {
             let header = value[0] + "" + value[1];
@@ -161,7 +163,7 @@ export default class HomeVC extends Component {
                     }
 
                     case CMDType.FindCup: {
-                        PublicAlert("寻找水杯", "寻找水杯完成");
+                        PublicAlert("查找水杯", "查找水杯完成");
                         break;
                     }
                 }
@@ -174,8 +176,8 @@ export default class HomeVC extends Component {
     };
 
     write=(index)=>{
-        // let {text} = this.state;
-        let text = "0D0A050100";
+        let {text} = this.state;
+        // let text = "0D0A050100";
         if(text.length === 0){
             this.alert('请输入消息');
             return;
@@ -362,6 +364,7 @@ export default class HomeVC extends Component {
         return (
             <ScrollView style={styles.container}>
                 {this._renderListItem()}
+                {/*{this.renderFooter()}*/}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
             </ScrollView>

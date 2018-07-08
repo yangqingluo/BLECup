@@ -443,7 +443,7 @@ export default class BleModule{
      * 计算十六进制数据长度，每两位为1个长度，返回十六进制长度 
      * */
 	getHexByteLength(str){
-		let length = parseInt(str.length / 2);
+		let length = parseInt(str.length / 2) + 3;//+3即header以及length本身的长度
 		return this.addZero(length.toString(16));
 	}
 
