@@ -9,8 +9,8 @@ import {
 import {TabBarBottom, TabNavigator} from 'react-navigation';
 import TabBarItem from '../components/TabBarItem';
 
-import HomeVC from './HomeVC';
-import MineVC from './MineVC';
+import HomeVC from './home/HomeVC';
+import MineVC from './mine/MineVC';
 
 const MainTabNavigator = TabNavigator(
     {

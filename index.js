@@ -3,6 +3,7 @@ import {StackNavigator, NavigationActions} from 'react-navigation';
 import './app/util/Global';
 
 import MainTab from './app/pages/MainTab';
+import CupConfigVC from './app/pages/home/CupConfigVC';
 import UserInfoVC from './app/pages/mine/UserInfoVC';
 import ClockVC from './app/pages/mine/ClockVC';
 import ClockSaveVC from './app/pages/mine/ClockSaveVC';
@@ -12,6 +13,9 @@ import SelectTextVC from './app/components/SelectTextVC';
 
 const MyNavigator = StackNavigator({
         MainTab:{screen: MainTab},
+
+        CupConfig:{screen: CupConfigVC},
+
         UserInfo:{screen: UserInfoVC},
         Clock:{screen: ClockVC},
         ClockSave:{screen: ClockSaveVC},

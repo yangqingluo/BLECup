@@ -11,6 +11,10 @@ import {NavigationActions} from "react-navigation";
 const {width, height}=Dimensions.get('window');
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import BleModule from './BleModule';
+
+//确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
+global.BluetoothManager = new BleModule();
 
 Date.prototype.Format = function(fmt) {
     let o = {

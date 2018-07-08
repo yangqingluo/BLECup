@@ -10,10 +10,6 @@ import {
     Dimensions,
     Alert,
 } from 'react-native'
-import BleModule from './BleModule';
-
-//确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
-global.BluetoothManager = new BleModule();
 
 export default class HomeVC extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -45,7 +41,6 @@ export default class HomeVC extends Component {
         this.discoverPeripheralListener = BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
         this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
-        this.updateValueListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);
     }
 
     componentWillUnmount(){
@@ -54,7 +49,6 @@ export default class HomeVC extends Component {
         this.discoverPeripheralListener.remove();
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove();
-        this.updateValueListener.remove();
         if(this.state.isConnected){
             BluetoothManager.disconnect();  //退出时断开蓝牙连接
         }
@@ -95,6 +89,7 @@ export default class HomeVC extends Component {
     //蓝牙设备已连接
     handleConnectPeripheral=(args)=>{
         console.log('BleManagerConnectPeripheral:', args);
+
     };
 
     //蓝牙设备已断开连接
@@ -110,15 +105,6 @@ export default class HomeVC extends Component {
             receiveData:'',
             text:'',
         });
-    };
-
-    //接收到新数据
-    handleUpdateValue=(data)=>{
-        //ios接收到的是小写的16进制，android接收的是大写的16进制，统一转化为大写16进制
-        let value = data.value.toUpperCase();
-        this.bluetoothReceiveData.push(value);
-        console.log('BluetoothUpdateValue', value);
-        this.setState({receiveData:this.bluetoothReceiveData.join('')})
     };
 
     connect(item){
@@ -143,6 +129,10 @@ export default class HomeVC extends Component {
                 this.setState({
                     data:[item.item],
                     isConnected:true
+                });
+
+                this.props.navigation.navigate("CupConfig", {
+
                 });
             })
             .catch(err=>{
@@ -193,69 +183,6 @@ export default class HomeVC extends Component {
         }
     }
 
-
-    alert(text){
-        Alert.alert('提示',text,[{ text:'确定',onPress:()=>{ } }]);
-    }
-
-    write=(index)=>{
-        if(this.state.text.length == 0){
-            this.alert('请输入消息');
-            return;
-        }
-        BluetoothManager.write(this.state.text,index)
-            .then(()=>{
-                this.bluetoothReceiveData = [];
-                this.setState({
-                    writeData:this.state.text,
-                    text:'',
-                })
-            })
-            .catch(err=>{
-                this.alert('发送失败');
-            })
-    }
-
-    writeWithoutResponse=(index)=>{
-        if(this.state.text.length == 0){
-            this.alert('请输入消息');
-            return;
-        }
-        BluetoothManager.writeWithoutResponse(this.state.text,index)
-            .then(()=>{
-                this.bluetoothReceiveData = [];
-                this.setState({
-                    writeData:this.state.text,
-                    text:'',
-                })
-            })
-            .catch(err=>{
-                this.alert('发送失败');
-            })
-    }
-
-    read=(index)=>{
-        BluetoothManager.read(index)
-            .then(data=>{
-                this.setState({readData:data});
-            })
-            .catch(err=>{
-                this.alert('读取失败');
-            })
-    }
-
-    notify=(index)=>{
-        BluetoothManager.startNotification(index)
-            .then(()=>{
-                this.setState({isMonitoring:true});
-                this.alert('开启成功');
-            })
-            .catch(err=>{
-                this.setState({isMonitoring:false});
-                this.alert('开启失败');
-            })
-    }
-
     renderItem=(item)=>{
         let data = item.item;
         return(
@@ -292,88 +219,12 @@ export default class HomeVC extends Component {
         )
     }
 
-    renderFooter=()=>{
-        return(
-            <View style={{marginBottom:30}}>
-                {this.state.isConnected?
-                    <View>
-                        {this.renderWriteView('写数据(write)：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
-                        {this.renderWriteView('写数据(writeWithoutResponse)：','发送',BluetoothManager.writeWithoutResponseCharacteristicUUID,this.writeWithoutResponse,this.state.writeData)}
-                        {this.renderReceiveView('读取的数据：','读取',BluetoothManager.readCharacteristicUUID,this.read,this.state.readData)}
-                        {this.renderReceiveView('通知监听接收的数据：'+`${this.state.isMonitoring?'监听已开启':'监听未开启'}`,'开启通知',BluetoothManager.nofityCharacteristicUUID,this.notify,this.state.receiveData)}
-
-                    </View>
-                    : <View></View>
-                }
-            </View>
-        )
-    }
-
-    renderReceiveView=(label,buttonText,characteristics,onPress,state)=>{
-        if(characteristics.length == 0){
-            return;
-        }
-        return(
-            <View style={{marginHorizontal:10,marginTop:30}}>
-                <Text style={{color:'black',marginTop:5}}>{label}</Text>
-                <Text style={styles.content}>
-                    {state}
-                </Text>
-                {characteristics.map((item,index)=>{
-                    return(
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            style={styles.buttonView}
-                            onPress={()=>{onPress(index)}}
-                            key={index}>
-                            <Text style={styles.buttonText}>{buttonText} ({item})</Text>
-                        </TouchableOpacity>
-                    )
-                })}
-            </View>
-        )
-    }
-
-    renderWriteView=(label,buttonText,characteristics,onPress,state)=>{
-        if(characteristics.length == 0){
-            return;
-        }
-        return(
-            <View style={{marginHorizontal:10,marginTop:30}} behavior='padding'>
-                <Text style={{color:'black'}}>{label}</Text>
-                <Text style={styles.content}>
-                    {this.state.writeData}
-                </Text>
-                {characteristics.map((item,index)=>{
-                    return(
-                        <TouchableOpacity
-                            key={index}
-                            activeOpacity={0.7}
-                            style={styles.buttonView}
-                            onPress={()=>{onPress(index)}}>
-                            <Text style={styles.buttonText}>{buttonText} ({item})</Text>
-                        </TouchableOpacity>
-                    )
-                })}
-                <TextInput
-                    style={[styles.textInput]}
-                    value={this.state.text}
-                    placeholder='请输入消息'
-                    onChangeText={(text)=>{
-                        this.setState({text:text});
-                    }}
-                />
-            </View>
-        )
-    };
-
     render () {
         return (
             <View style={styles.container}>
                 <FlatList
                     renderItem={this.renderItem}
                     ListHeaderComponent={this.renderHeader}
-                    ListFooterComponent={this.renderFooter}
                     keyExtractor={item=>item.id}
                     data={this.state.data}
                     extraData={

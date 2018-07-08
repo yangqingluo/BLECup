@@ -12,7 +12,7 @@ import {
     Platform,
     TextInput,
 } from 'react-native';
-import CustomItem from '../components/CustomItem';
+import CustomItem from '../../components/CustomItem';
 
 export default class MineVC extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -26,8 +26,8 @@ export default class MineVC extends Component {
             refreshing: false
         };
         this.config = [
-            {idKey:"info", name:"个人资料修改", logo:require('../images/icon_info.png'), onPress:this.cellSelected.bind(this, "UserInfo")},
-            {idKey:"clock", name:"闹钟设置", logo:require('../images/icon_clock.png'), onPress:this.cellSelected.bind(this, "Clock")},
+            {idKey:"info", name:"个人资料修改", logo:require('../../images/icon_info.png'), onPress:this.cellSelected.bind(this, "UserInfo")},
+            {idKey:"clock", name:"闹钟设置", logo:require('../../images/icon_clock.png'), onPress:this.cellSelected.bind(this, "Clock")},
         ];
     }
 
@@ -50,8 +50,8 @@ export default class MineVC extends Component {
 
     _renderHeader() {
         return (
-            <ImageBackground source={require('../images/account_background.png')} style={styles.headerContainer}>
-                <Image source={require('../images/role.png')} style={{width: 80, height: 80}} />
+            <ImageBackground source={require('../../images/account_background.png')} style={styles.headerContainer}>
+                <Image source={require('../../images/role.png')} style={{width: 80, height: 80}} />
                 <Text style={[styles.bottomText, {marginTop: 5}]}>{stringIsEmpty(userData.name) ? "未设置" : userData.name}</Text>
                 <View style={{flex:1}}/>
                 <View style={{width: screenWidth, height: 1, backgroundColor: appData.SeparatorColor}}/>
