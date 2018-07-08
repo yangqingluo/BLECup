@@ -431,11 +431,10 @@ export default class BleModule{
     }
 
     /** 
-     * 添加蓝牙协议格式，包头、数据长度、包尾，不同的蓝牙协议应作相应的更改  
-     * 0A => FEFD010AFCFB
+     * 添加蓝牙协议格式，包头、数据长度、包尾，不同的蓝牙协议应作相应的更改
      * */
     addProtocol(data){
-        return 'FEFD' + this.getHexByteLength(data) + data + 'FCFB';
+        return 'FEFD' + this.getHexByteLength(data) + data;
     }
 
 	/** 
@@ -443,8 +442,7 @@ export default class BleModule{
      * */
 	getHexByteLength(str){
 		let length = parseInt(str.length / 2);
-		let hexLength = this.addZero(length.toString(16));
-		return hexLength;
+		return this.addZero(length.toString(16));
 	}
 
     /** 

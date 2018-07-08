@@ -92,8 +92,11 @@ export default class HomeVC extends Component {
         newData[item.index].isConnecting = true;
         this.setState({data:newData});
 
+        this.refIndicator.show();
         BluetoothManager.connect(item.item.id)
             .then(peripheralInfo=>{
+                this.refIndicator.hide();
+
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;
                 //连接成功，列表只显示已连接的设备
@@ -106,10 +109,12 @@ export default class HomeVC extends Component {
                 });
             })
             .catch(err=>{
+                this.refIndicator.hide();
+
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;
                 this.setState({data:newData});
-                PublicAlert('连接失败');
+                this.refToast.show('连接失败');
             })
     }
 

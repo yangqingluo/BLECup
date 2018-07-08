@@ -11,6 +11,7 @@ import {
     Dimensions,
     Alert,
 } from 'react-native'
+import CustomItem from '../../components/CustomItem';
 import IndicatorModal from '../../components/IndicatorModal';
 import Toast from "react-native-easy-toast";
 
@@ -28,14 +29,53 @@ export default class HomeVC extends Component {
             writeData:'',
             receiveData:'',
             readData:'',
-            isMonitoring:false
+            isMonitoring:false,
+            temperatureWater: '',
+            temperatureAir: '',
+            power: '',
         };
+        this.writeIndex = -1;
+        this.notifyIndex = -1;
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
+        this.config = [
+            {idKey:"Temperature", name:"水温", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Temperature")},
+            {idKey:"Power", name:"电量", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Power")},
+        ];
     }
 
     componentDidMount() {
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
         this.updateValueListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);
+        BluetoothManager.nofityCharacteristicUUID.map((item, index)=>{
+            if (item === notifyUUID) {
+                this.notifyIndex = index;
+            }
+        });
+        BluetoothManager.writeWithoutResponseCharacteristicUUID.map((item, index)=>{
+            if (item === writeUUID) {
+                this.writeIndex = index;
+            }
+        });
+        if (this.notifyIndex < 0) {
+            PublicAlert('出错','没有找到可读取的服务',[
+                {
+                    text:'确定',
+                    onPress:()=>{ this.goBack() }
+                }
+            ]);
+        }
+        else if (this.writeIndex < 0) {
+            PublicAlert('出错','没有找到可写入的服务',[
+                {
+                    text:'确定',
+                    onPress:()=>{ this.goBack() }
+                }
+            ]);
+        }
+        else {
+            this.notify(this.notifyIndex);
+            this.doReadTemperature();
+        }
     }
 
     componentWillUnmount() {
@@ -48,6 +88,11 @@ export default class HomeVC extends Component {
 
     goBack() {
         this.props.navigation.goBack();
+    }
+
+    doReadTemperature() {
+        let data = "0D0A050100";
+        this.doWriteData(this.writeIndex, data);
     }
 
     //蓝牙设备已连接
@@ -67,9 +112,33 @@ export default class HomeVC extends Component {
     handleUpdateValue = (data) => {
         //接收到的value按字节以逗号分隔
         let value = data.value;
-        this.bluetoothReceiveData.push(value);
-        console.log('BluetoothUpdateValue', value);
-        this.setState({receiveData:this.bluetoothReceiveData.join('')})
+        // this.bluetoothReceiveData.push(value);
+        // console.log('BluetoothUpdateValue', value);
+        // this.setState({receiveData:this.bluetoothReceiveData.join('')});
+
+        if (value.length >= 5) {
+            let header = value[0] + "" + value[1];
+            let length = parseInt(value[2]);
+            if (header.toUpperCase() === "1310" && length === value.length) {
+                let ID = value[3];
+                let cmd = parseInt(value[4]);
+                switch (cmd) {
+                    case CMDType.ReadTemperature:{
+                        if (length >= 7) {
+                            this.setState({
+                                temperatureAir: value[5],
+                                temperatureWater: value[6],
+                            });
+                        }
+                        else if (length >= 6) {
+                            this.setState({
+                                temperatureWater: value[5],
+                            });
+                        }
+                    }
+                }
+            }
+        }
     };
 
     alert = (text) => {
@@ -89,6 +158,23 @@ export default class HomeVC extends Component {
                 this.setState({
                     writeData:text,
                     text:'',
+                })
+            })
+            .catch(err=>{
+                this.alert('发送失败');
+            })
+    };
+
+    doWriteData(index, data) {
+        if(stringIsEmpty(data)){
+            this.alert('发送数据不能为空');
+            return;
+        }
+        BluetoothManager.write(data, index)
+            .then(()=>{
+                this.bluetoothReceiveData = [];
+                this.setState({
+                    writeData:data,
                 })
             })
             .catch(err=>{
@@ -124,15 +210,15 @@ export default class HomeVC extends Component {
             })
     };
 
-    notify=(index)=>{
+    notify = (index) => {
         BluetoothManager.startNotification(index)
             .then(()=>{
                 this.setState({isMonitoring:true});
-                this.alert('开启成功');
+                // this.alert('开启成功');
             })
             .catch(err=>{
                 this.setState({isMonitoring:false});
-                this.alert('开启失败');
+                // this.alert('开启失败');
             })
     };
 
@@ -205,10 +291,33 @@ export default class HomeVC extends Component {
         )
     };
 
+
+    cellSelected(key, data = {}){
+
+    }
+
+    _renderSubNameForIndex(item, index) {
+        if (item.idKey === "Temperature") {
+            return this.state.temperatureWater + " ℃";
+        }
+        else if (item.idKey === "Power") {
+            return this.state.power + "";
+        }
+    }
+
+    _renderListItem() {
+        return this.config.map((item, i) => {
+            return <View key={'cell' + i} style={{paddingLeft: 10, backgroundColor: "white"}}>
+                <CustomItem key={i} {...item}
+                            subName = {this._renderSubNameForIndex(item, i)}/>
+            </View>;
+        })
+    }
+
     render() {
         return (
             <ScrollView style={styles.container}>
-                {this.renderFooter()}
+                {this._renderListItem()}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
             </ScrollView>
