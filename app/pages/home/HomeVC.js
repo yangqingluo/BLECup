@@ -21,37 +21,22 @@ export default class HomeVC extends Component {
         super(props);
         this.state={
             data: [],
-            scaning:false,
-            isConnected:false,
-            text:'',
-            writeData:'',
-            receiveData:'',
-            readData:'',
-            isMonitoring:false
+            scanning: false,
         };
-        this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.deviceMap = new Map();
-
     }
 
-    componentDidMount(){
+    componentDidMount() {
         BluetoothManager.start();  //蓝牙初始化
         this.updateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
         this.stopScanListener = BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);
         this.discoverPeripheralListener = BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
-        this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
-        this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
     }
 
     componentWillUnmount(){
         this.updateStateListener.remove();
         this.stopScanListener.remove();
         this.discoverPeripheralListener.remove();
-        this.connectPeripheralListener.remove();
-        this.disconnectPeripheralListener.remove();
-        if(this.state.isConnected){
-            BluetoothManager.disconnect();  //退出时断开蓝牙连接
-        }
     }
 
     //蓝牙状态改变
@@ -59,20 +44,19 @@ export default class HomeVC extends Component {
         console.log('BleManagerDidUpdateStatea:', args);
         BluetoothManager.bluetoothState = args.state;
         if(args.state === 'on'){  //蓝牙打开时自动搜索
-            this.scan();
+            this.startScan();
         }
     };
 
     //扫描结束监听
     handleStopScan=()=>{
         console.log('BleManagerStopScan:','Scanning is stopped');
-        this.setState({scaning:false});
+        this.setState({scanning:false});
     };
 
     //搜索到一个新设备监听
     handleDiscoverPeripheral=(data)=>{
-        // console.log('BleManagerDiscoverPeripheral:', data);
-        console.log(data.id,data.name);
+        console.log(data.id, data.name);
         let id = data.id;  //蓝牙连接id
         let macAddress;  //蓝牙Mac地址
         if(Platform.OS === 'android'){
@@ -86,36 +70,15 @@ export default class HomeVC extends Component {
         this.setState({data:[...this.deviceMap.values()]});
     };
 
-    //蓝牙设备已连接
-    handleConnectPeripheral=(args)=>{
-        console.log('BleManagerConnectPeripheral:', args);
-
-    };
-
-    //蓝牙设备已断开连接
-    handleDisconnectPeripheral=(args)=>{
-        console.log('BleManagerDisconnectPeripheral:', args);
-        let newData = [...this.deviceMap.values()];
-        BluetoothManager.initUUID();  //断开连接后清空UUID
-        this.setState({
-            data:newData,
-            isConnected:false,
-            writeData:'',
-            readData:'',
-            receiveData:'',
-            text:'',
-        });
-    };
-
     connect(item){
         //当前蓝牙正在连接时不能打开另一个连接进程
         if(BluetoothManager.isConnecting){
             console.log('当前蓝牙正在连接时不能打开另一个连接进程');
             return;
         }
-        if(this.state.scaning){  //当前正在扫描中，连接时关闭扫描
+        if(this.state.scanning){  //当前正在扫描中，连接时关闭扫描
             BluetoothManager.stopScan();
-            this.setState({scaning:false});
+            this.setState({scanning:false});
         }
         let newData = [...this.deviceMap.values()];
         newData[item.index].isConnecting = true;
@@ -128,7 +91,6 @@ export default class HomeVC extends Component {
                 //连接成功，列表只显示已连接的设备
                 this.setState({
                     data:[item.item],
-                    isConnected:true
                 });
 
                 this.props.navigation.navigate("CupConfig", {
@@ -143,31 +105,29 @@ export default class HomeVC extends Component {
             })
     }
 
-    disconnect(){
-        this.setState({
-            data:[...this.deviceMap.values()],
-            isConnected:false
-        });
-        BluetoothManager.disconnect();
-    }
-
-    scan(){
-        if(this.state.scaning){  //当前正在扫描中
-            BluetoothManager.stopScan();
-            this.setState({scaning:false});
+    startScan () {
+        if(this.state.scanning){  //当前正在扫描中
+            // BluetoothManager.stopScan();
+            // this.setState({scanning:false});
+            return;
         }
-        if(BluetoothManager.bluetoothState === 'on'){
+        if(BluetoothManager.bluetoothState === 'on') {
             BluetoothManager.scan()
                 .then(()=>{
-                    this.setState({ scaning:true });
+                    this.deviceMap.clear();
+                    this.setState({
+                        data: [],
+                        scanning: true,
+                    });
                 }).catch(err=>{
 
             })
-        }else{
+        }
+        else {
             BluetoothManager.checkState();
             if(Platform.OS === 'ios'){
                 this.alert('请开启手机蓝牙');
-            }else{
+            } else {
                 Alert.alert('提示','请开启手机蓝牙',[
                     {
                         text:'取消',
@@ -179,7 +139,6 @@ export default class HomeVC extends Component {
                     }
                 ]);
             }
-
         }
     }
 
@@ -188,36 +147,33 @@ export default class HomeVC extends Component {
         return(
             <TouchableOpacity
                 activeOpacity={0.7}
-                disabled={this.state.isConnected}
                 onPress={()=>{this.connect(item)}}
                 style={styles.item}>
-
                 <View style={{flexDirection:'row',}}>
-                    <Text style={{color:'black'}}>{data.name?data.name:''}</Text>
+                    <Text style={{color:'black'}}>{data.name ? data.name : ''}</Text>
                     <Text style={{marginLeft:50,color:"red"}}>{data.isConnecting?'连接中...':''}</Text>
                 </View>
                 <Text>{data.id}</Text>
-
             </TouchableOpacity>
         );
     };
 
-    renderHeader=()=>{
+    renderHeader = () => {
         return(
             <View style={{marginTop:20}}>
                 <TouchableOpacity
                     activeOpacity={0.7}
                     style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
-                    onPress={this.state.isConnected?this.disconnect.bind(this):this.scan.bind(this)}>
-                    <Text style={styles.buttonText}>{this.state.scaning?'正在搜索中':this.state.isConnected?'断开蓝牙':'搜索蓝牙'}</Text>
+                    onPress={this.startScan.bind(this)}>
+                    <Text style={styles.buttonText}>{this.state.scanning ? '正在搜索中' : '搜索蓝牙'}</Text>
                 </TouchableOpacity>
 
                 <Text style={{marginLeft:10,marginTop:10}}>
-                    {this.state.isConnected?'当前连接的设备':'可用设备'}
+                    {'可用设备'}
                 </Text>
             </View>
         )
-    }
+    };
 
     render () {
         return (
@@ -227,16 +183,7 @@ export default class HomeVC extends Component {
                     ListHeaderComponent={this.renderHeader}
                     keyExtractor={item=>item.id}
                     data={this.state.data}
-                    extraData={
-                        [
-                            this.state.isConnected,
-                            this.state.text,
-                            this.state.receiveData,
-                            this.state.readData,
-                            this.state.writeData,
-                            this.state.isMonitoring,
-                            this.state.scaning
-                        ]}
+                    extraData={[this.state.scanning]}
                     keyboardShouldPersistTaps='handled'
                 />
             </View>

@@ -22,8 +22,7 @@ export default class HomeVC extends Component {
         super(props);
         this.state={
             data: [],
-            scaning:false,
-            isConnected:false,
+            isConnected: true,
             text:'',
             writeData:'',
             receiveData:'',
@@ -92,7 +91,7 @@ export default class HomeVC extends Component {
             .catch(err=>{
                 this.alert('发送失败');
             })
-    }
+    };
 
     writeWithoutResponse=(index)=>{
         if(this.state.text.length === 0){
@@ -110,7 +109,7 @@ export default class HomeVC extends Component {
             .catch(err=>{
                 this.alert('发送失败');
             })
-    }
+    };
 
     read=(index)=>{
         BluetoothManager.read(index)
@@ -120,7 +119,7 @@ export default class HomeVC extends Component {
             .catch(err=>{
                 this.alert('读取失败');
             })
-    }
+    };
 
     notify=(index)=>{
         BluetoothManager.startNotification(index)
@@ -132,9 +131,9 @@ export default class HomeVC extends Component {
                 this.setState({isMonitoring:false});
                 this.alert('开启失败');
             })
-    }
+    };
 
-    renderFooter=()=>{
+    renderFooter = () => {
         return(
             <View style={{marginBottom:30}}>
                 <View>
@@ -145,9 +144,9 @@ export default class HomeVC extends Component {
                 </View>
             </View>
         )
-    }
+    };
 
-    renderReceiveView=(label,buttonText,characteristics,onPress,state)=>{
+    renderReceiveView = (label, buttonText, characteristics, onPress, state) => {
         if(characteristics.length === 0){
             return;
         }
@@ -170,9 +169,9 @@ export default class HomeVC extends Component {
                 })}
             </View>
         )
-    }
+    };
 
-    renderWriteView=(label,buttonText,characteristics,onPress,state)=>{
+    renderWriteView = (label, buttonText, characteristics, onPress, state) => {
         if(characteristics.length === 0){
             return;
         }
