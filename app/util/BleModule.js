@@ -59,7 +59,7 @@ export default class BleModule{
      * */
     scan() {
         return new Promise( (resolve, reject) =>{
-            BleManager.scan([serviceUUID], 5, true)
+            BleManager.scan([serviceUUID], 2, true)
                 .then( () => {
                     console.log('Scan started');
                     resolve();

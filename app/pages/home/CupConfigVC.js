@@ -38,8 +38,8 @@ export default class HomeVC extends Component {
         this.notifyIndex = -1;
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.config = [
-            {idKey:"Temperature", name:"水温", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Temperature")},
-            {idKey:"Power", name:"电量", hideArrowForward:true, onPress:this.cellSelected.bind(this, "Power")},
+            {idKey:"Temperature", name:"水温", onPress:this.cellSelected.bind(this, "Temperature")},
+            {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
         ];
@@ -53,7 +53,7 @@ export default class HomeVC extends Component {
                 this.notifyIndex = index;
             }
         });
-        BluetoothManager.writeWithoutResponseCharacteristicUUID.map((item, index)=>{
+        BluetoothManager.writeWithResponseCharacteristicUUID.map((item, index)=>{
             if (item === writeUUID) {
                 this.writeIndex = index;
             }
@@ -76,8 +76,8 @@ export default class HomeVC extends Component {
         }
         else {
             this.notify(this.notifyIndex);
-            this.doReadTemperature();
-            this.doReadPower();
+            // this.doReadTemperature();
+            // this.doReadPower();
         }
     }
 
@@ -211,7 +211,7 @@ export default class HomeVC extends Component {
                 })
             })
             .catch(err=>{
-                this.alert('发送失败');
+                this.alert(err);
             })
     };
 
@@ -326,7 +326,13 @@ export default class HomeVC extends Component {
 
 
     cellSelected(key, data = {}) {
-        if (key === "SyncTime") {
+        if (key === "Temperature") {
+            this.doReadTemperature();
+        }
+        else if (key === "Power") {
+            this.doReadPower();
+        }
+        else if (key === "SyncTime") {
             let time = Date.parse(new Date()) * 0.001;
             let data = numberToHex(CMDType.SyncTime)
                 + numberToHex(time & 0x000000ff)
