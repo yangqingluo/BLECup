@@ -76,8 +76,18 @@ export default class HomeVC extends Component {
         }
         else {
             this.notify(this.notifyIndex);
-            // this.doReadTemperature();
-            // this.doReadPower();
+            setTimeout(
+                () => {
+                    this.doReadTemperature();
+                },
+                200
+            );
+            setTimeout(
+                () => {
+                    this.doReadPower();
+                    },
+                300
+            );
         }
     }
 
@@ -127,9 +137,8 @@ export default class HomeVC extends Component {
         // PublicAlert(JSON.stringify(value));
 
         if (value.length >= 5) {
-            let header = value[0] + "" + value[1];
             let length = parseInt(value[2]);
-            if (header.toUpperCase() === "1310" && length <= value.length) {
+            if ((value[0] === 0xFF || value[0] === 0x0D) && value[1] === 0x0A && length <= value.length) {
                 let ID = value[3];
                 let cmd = parseInt(value[4]);
                 switch (cmd) {
