@@ -466,7 +466,21 @@ export default class HomeVC extends Component {
 
     deleteRow(rowMap, index) {
         this.closeRow(rowMap, index);
-
+        PublicAlert("删除闹钟", "确定删除闹钟？", [
+            {
+                text:'取消',
+                onPress:()=>{ }
+            },
+            {
+                text:'确定',
+                onPress:()=>{
+                    let alarm = this.state.alarms[index];
+                    let data = numberToHex(CMDType.RemoveAlarm)
+                        + numberToHex(alarm.id);
+                    this.doWriteData(data);
+                }
+            }
+        ]);
     }
 
     _renderCell = (data, rowMap) => {

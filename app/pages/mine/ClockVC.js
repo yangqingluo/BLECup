@@ -85,15 +85,26 @@ export default class UserInfoVC extends Component {
 
     deleteRow(rowMap, index) {
         this.closeRow(rowMap, index);
-        const newData = [...this.state.dataSource];
-        newData.splice(index, 1);
+        PublicAlert("删除闹钟", "确定删除闹钟？", [
+            {
+                text:'取消',
+                onPress:()=>{ }
+            },
+            {
+                text:'确定',
+                onPress:()=>{
+                    const newData = [...this.state.dataSource];
+                    newData.splice(index, 1);
 
-        let data = userData;
-        data.clocks = newData;
-        saveUserData(data);
-        this.setState({
-            dataSource: userData.clocks,
-        });
+                    let data = userData;
+                    data.clocks = newData;
+                    saveUserData(data);
+                    this.setState({
+                        dataSource: userData.clocks,
+                    });
+                }
+            }
+        ]);
     }
 
     _renderCell = (data, rowMap) => {
