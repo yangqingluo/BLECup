@@ -46,6 +46,7 @@ export default class HomeVC extends Component {
             {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
+            {idKey:"AddAlarm", name:"添加闹钟", onPress:this.cellSelected.bind(this, "AddAlarm")},
             {idKey:"ReadAlarm", name:"读取闹钟", onPress:this.cellSelected.bind(this, "ReadAlarm")},
         ];
     }
@@ -385,6 +386,12 @@ export default class HomeVC extends Component {
             let data = numberToHex(CMDType.FindCup);
             this.doWriteData(data);
         }
+        else if (key === "AddAlarm") {
+            this.props.navigation.navigate('CupAlarmSave',
+                {
+                    callBack: this.callBackFromAlarmSaveVC.bind(this),
+                });
+        }
         else if (key === "ReadAlarm") {
             let data = numberToHex(CMDType.ReadAlarm) + "00";
             this.doWriteData(data);
@@ -422,6 +429,18 @@ export default class HomeVC extends Component {
 
             let data = numberToHex(CMDType.EditAlarm)
                 + numberToHex(alarm.id)
+                + numberToHex(alarm.status)
+                + numberToHex(alarm.hour)
+                + numberToHex(alarm.minute);
+            this.doWriteData(data);
+        }
+        else {
+            let alarm = {
+                status: status,
+                hour: time.getHours(),
+                minute: time.getMinutes(),
+            };
+            let data = numberToHex(CMDType.AddAlarm)
                 + numberToHex(alarm.status)
                 + numberToHex(alarm.hour)
                 + numberToHex(alarm.minute);
