@@ -12,6 +12,8 @@ import {
     Alert,
 } from 'react-native'
 import CustomItem from '../../components/CustomItem';
+import { SwipeListView, SwipeRow } from '../../components/swipelist';
+import ClockCell from '../../components/ClockCell';
 import IndicatorModal from '../../components/IndicatorModal';
 import Toast from "react-native-easy-toast";
 
@@ -33,6 +35,7 @@ export default class HomeVC extends Component {
             temperatureWater: '',
             temperatureAir: '',
             power: '',
+            alarms: [],
         };
         this.writeIndex = -1;
         this.notifyIndex = -1;
@@ -42,6 +45,7 @@ export default class HomeVC extends Component {
             {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
+            {idKey:"ReadAlarm", name:"读取闹钟", onPress:this.cellSelected.bind(this, "ReadAlarm")},
         ];
     }
 
@@ -162,6 +166,22 @@ export default class HomeVC extends Component {
                             this.setState({
                                 power: value[5],
                             });
+                        }
+                        break;
+                    }
+
+                    case CMDType.ReadAlarm: {
+                        if (length >= 10) {
+                            // "255,10,10,3,5,20,5,165,8,0"
+                            let alarmNum = value[5];
+                            let alarm = {
+                                id: value[6],
+                                status: value[7],
+                                hour: value[8],
+                                minute: value[9],
+                            };
+                            this.state.alarms.push(alarm);
+                            this.forceUpdate();
                         }
                         break;
                     }
@@ -348,11 +368,14 @@ export default class HomeVC extends Component {
                 + numberToHex((time & 0x0000ff00) >> 8)
                 + numberToHex((time & 0x00ff0000) >> 16)
                 + numberToHex((time & 0xff000000) >> 24);
-            // PublicAlert(time + "***" + data);
             this.doWriteData(data);
         }
         else if (key === "Find") {
             let data = numberToHex(CMDType.FindCup);
+            this.doWriteData(data);
+        }
+        else if (key === "ReadAlarm") {
+            let data = numberToHex(CMDType.ReadAlarm) + "00";
             this.doWriteData(data);
         }
     }
@@ -363,6 +386,9 @@ export default class HomeVC extends Component {
         }
         else if (item.idKey === "Power") {
             return this.state.power + " %";
+        }
+        else if (item.idKey === "ReadAlarm") {
+
         }
     }
 
@@ -375,11 +401,56 @@ export default class HomeVC extends Component {
         })
     }
 
+
+
+    onCellSelected(data: Object) {
+
+    };
+
+    onCellValueChange(data: Object, value: boolean) {
+
+    }
+
+    closeRow(rowMap, index) {
+        if (rowMap[index]) {
+            rowMap[index].closeRow();
+        }
+    }
+
+    deleteRow(rowMap, index) {
+        this.closeRow(rowMap, index);
+
+    }
+
+    _renderCell = (data, rowMap) => {
+        return (
+            <ClockCell data={data}
+                       onCellSelected={this.onCellSelected.bind(this)}
+                       onCellValueChange={this.onCellValueChange.bind(this)}/>
+        )
+    };
+
     render() {
         return (
             <ScrollView style={styles.container}>
                 {this._renderListItem()}
-                {/*{this.renderFooter()}*/}
+                <SwipeListView
+                    useFlatList
+                    style={styles.container}
+                    data={this.state.alarms}
+                    renderItem={this._renderCell}
+                    renderHiddenItem={(data, rowMap) => (
+                        <View style={styles.rowBack}>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
+                                <Text style={styles.backTextWhite}>删除</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    keyExtractor={(item: Object, index: number) => ('' + index)}
+                    disableRightSwipe={true}
+                    rightOpenValue={-1 * appData.DefaultOpenValue}
+                />
+                {this.renderFooter()}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
             </ScrollView>
@@ -424,5 +495,40 @@ const styles = StyleSheet.create({
         height:50,
         fontSize:16,
         flex:1,
+    },
+    backTextWhite: {
+        color: '#FFF'
+    },
+    rowFront: {
+        alignItems: 'center',
+        backgroundColor: '#CCC',
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+        height: 50,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: '#DDD',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backRightBtn: {
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75
+    },
+    backRightBtnLeft: {
+        backgroundColor: 'blue',
+        right: 75
+    },
+    backRightBtnRight: {
+        backgroundColor: 'red',
+        right: 0
     },
 });

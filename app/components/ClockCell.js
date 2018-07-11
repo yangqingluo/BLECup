@@ -10,7 +10,7 @@ import {
 
 type Props = {
     data: Object,
-    onPress: Function,
+    onCellSelected: Function,
 }
 
 export default class ClockCell extends PureComponent<Props> {
@@ -28,7 +28,7 @@ export default class ClockCell extends PureComponent<Props> {
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>
                     </View>
                     <View style={styles.rowItem}>
-                        <Switch value={clockIsOpen(data.item.status)}
+                        <Switch value={alarmIsOpen(data.item.status)}
                                 onValueChange={(value) => this.props.onCellValueChange(data, value)}/>
                     </View>
                 </View>

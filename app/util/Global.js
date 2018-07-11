@@ -120,12 +120,14 @@ global.notifyUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCAAA";
 global.CMDType = {
     ReadTemperature: 0x00,//读取水温
     ReadPower:       0x01,//读取电量
-    AddClock:        0x02,//增加闹钟
-    RemoveClock:     0x03,//删除闹钟
-    EditClock:       0x04,//编辑闹钟
-    ReadClock:       0x05,//读取闹钟
+    AddAlarm:        0x02,//增加闹钟
+    RemoveAlarm:     0x03,//删除闹钟
+    EditAlarm:       0x04,//编辑闹钟
+    ReadAlarm:       0x05,//读取闹钟
     SyncTime:        0x06,//同步时间
     FindCup:         0x07,//寻找水杯
+    TDS:             0x08,//TDS deprecated
+    Cheers:          0x09,//碰杯数据
 };
 
 global.appData = {
@@ -228,7 +230,7 @@ global.createRepeatString = function(status : Number) : String {
     }
 };
 
-global.clockIsOpen = function(status : Number) : boolean {
+global.alarmIsOpen = function(status : Number) : boolean {
     return (status & 0x01) === 0x01;
 };
 
