@@ -393,8 +393,23 @@ export default class HomeVC extends Component {
                 });
         }
         else if (key === "ReadAlarm") {
-            let data = numberToHex(CMDType.ReadAlarm) + "00";
-            this.doWriteData(data);
+            let validIDs = [];
+            for (let i = 0; i < 20; i++) {
+                validIDs.push(i);
+            }
+            this.state.alarms.map((item, index)=>{
+                let j = validIDs.indexOf(item.id);
+                if (j !== -1) {
+                    validIDs.splice(j, 1);
+                }
+            });
+            if (validIDs.length > 0) {
+                let data = numberToHex(CMDType.ReadAlarm) + numberToHex(validIDs[0]);
+                this.doWriteData(data);
+            }
+            else {
+                this.refToast.show("20个闹钟已经全部读取");
+            }
         }
     }
 
@@ -404,9 +419,6 @@ export default class HomeVC extends Component {
         }
         else if (item.idKey === "Power") {
             return this.state.power + " %";
-        }
-        else if (item.idKey === "ReadAlarm") {
-
         }
     }
 
