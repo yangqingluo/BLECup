@@ -56,7 +56,7 @@ export default class UserInfoVC extends Component {
         data.clocks = array;
         saveUserData(data);
 
-        this.props.navigation.state.params.callBack && this.props.navigation.state.params.callBack(this.state.time, this.state.status);
+        this.props.navigation.state.params.callBack && this.props.navigation.state.params.callBack(this.state.time, this.state.status, this.state.index);
         this.props.navigation.goBack();
     }
 

@@ -4,6 +4,7 @@ import './app/util/Global';
 
 import MainTab from './app/pages/MainTab';
 import CupConfigVC from './app/pages/home/CupConfigVC';
+import CupAlarmSaveVC from './app/pages/home/CupAlarmSaveVC';
 import UserInfoVC from './app/pages/mine/UserInfoVC';
 import ClockVC from './app/pages/mine/ClockVC';
 import ClockSaveVC from './app/pages/mine/ClockSaveVC';
@@ -15,6 +16,7 @@ const MyNavigator = StackNavigator({
         MainTab:{screen: MainTab},
 
         CupConfig:{screen: CupConfigVC},
+        CupAlarmSave:{screen: CupAlarmSaveVC},
 
         UserInfo:{screen: UserInfoVC},
         Clock:{screen: ClockVC},
@@ -36,4 +38,34 @@ const MyNavigator = StackNavigator({
         // onTransitionEnd: () => { console.log('导航栏切换结束'); }  // 回调
     }
 );
+
+const defaultGetStateForAction = MyNavigator.router.getStateForAction;
+MyNavigator.router.getStateForAction = (action, state) => {
+    // goBack返回指定页面
+    if (state && action.type === 'Navigation/BACK' && action.key) {
+        const backRoute = state.routes.find((route) => route.routeName === action.key);
+        if (backRoute) {
+            const backRouteIndex = state.routes.indexOf(backRoute);
+
+            const purposeState = {
+                ...state,
+                routes: state.routes.slice(0, backRouteIndex + 1),
+                index: backRouteIndex,
+            };
+            return purposeState;
+        }
+        else {
+            let routes = state.routes.slice(0, state.routes.length - 1);
+            const purposeState = {
+                ...state,
+                routes: routes,
+                index: routes.length - 1,
+            };
+            return purposeState;
+        }
+    }
+    return defaultGetStateForAction(action, state)
+};
+
+
 AppRegistry.registerComponent('BLECup', () => MyNavigator);

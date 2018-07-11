@@ -68,7 +68,7 @@ export default class HomeVC extends Component {
             //如果广播携带有Mac地址，ios可通过广播0x18获取蓝牙Mac地址，
             macAddress = BluetoothManager.getMacAddressFromIOS(data);
         }
-        this.deviceMap.set(data.id,data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
+        this.deviceMap.set(data.id, data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
         this.setState({data:[...this.deviceMap.values()]});
     };
 

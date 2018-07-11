@@ -37,6 +37,7 @@ export default class HomeVC extends Component {
             power: '',
             alarms: [],
         };
+        this.alarmMap = new Map();
         this.writeIndex = -1;
         this.notifyIndex = -1;
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
@@ -125,9 +126,7 @@ export default class HomeVC extends Component {
     //蓝牙设备已断开连接
     handleDisconnectPeripheral=(args)=>{
         console.log('BleManagerDisconnectPeripheral:', args);
-
-        BluetoothManager.initUUID();  //断开连接后清空UUID
-        this.goBack();
+        bluetoothDisconnectToBack();
     };
 
     //接收到新数据
@@ -170,9 +169,21 @@ export default class HomeVC extends Component {
                         break;
                     }
 
+                    case CMDType.AddAlarm: {
+
+                        break;
+                    }
+                    case CMDType.RemoveAlarm: {
+
+                        break;
+                    }
+                    case CMDType.EditAlarm: {
+                        //255,10,6,14,4,4
+                        break;
+                    }
+
                     case CMDType.ReadAlarm: {
                         if (length >= 10) {
-                            // "255,10,10,3,5,20,5,165,8,0"
                             let alarmNum = value[5];
                             let alarm = {
                                 id: value[6],
@@ -180,8 +191,8 @@ export default class HomeVC extends Component {
                                 hour: value[8],
                                 minute: value[9],
                             };
-                            this.state.alarms.push(alarm);
-                            this.forceUpdate();
+                            this.alarmMap.set(alarm.id, alarm);
+                            this.setState({alarms:[...this.alarmMap.values()]});
                         }
                         break;
                     }
@@ -402,13 +413,49 @@ export default class HomeVC extends Component {
     }
 
 
+    callBackFromAlarmSaveVC(time, status, index) {
+        if (index >= 0 && index < this.state.alarms.length) {
+            let alarm = this.state.alarms[index];
+            alarm.status = status;
+            alarm.hour = time.getHours();
+            alarm.minute = time.getMinutes();
 
-    onCellSelected(data: Object) {
+            let data = numberToHex(CMDType.EditAlarm)
+                + numberToHex(alarm.id)
+                + numberToHex(alarm.status)
+                + numberToHex(alarm.hour)
+                + numberToHex(alarm.minute);
+            this.doWriteData(data);
+        }
+    }
 
+    onCellSelected(cellData: Object) {
+        let time = new Date();
+        time.setHours(cellData.item.hour);
+        time.setMinutes(cellData.item.minute);
+        this.props.navigation.navigate('CupAlarmSave',
+            {
+                index: cellData.index,
+                time: time,
+                status: cellData.item.status,
+                callBack: this.callBackFromAlarmSaveVC.bind(this),
+            });
     };
 
-    onCellValueChange(data: Object, value: boolean) {
-
+    onCellValueChange(cellData: Object, value: boolean) {
+        let alarm = cellData.item;
+        if (value) {
+            alarm.status |= 0x01;
+        }
+        else {
+            alarm.status &= 0xfe;
+        }
+        let data = numberToHex(CMDType.EditAlarm)
+            + numberToHex(alarm.id)
+            + numberToHex(alarm.status)
+            + numberToHex(alarm.hour)
+            + numberToHex(alarm.minute);
+        this.doWriteData(data);
     }
 
     closeRow(rowMap, index) {

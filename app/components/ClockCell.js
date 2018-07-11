@@ -22,7 +22,7 @@ export default class ClockCell extends PureComponent<Props> {
                 style={styles.rowFront}
                 underlayColor={appData.UnderlayColor}
             >
-                <View style={{paddingHorizontal: 10, flexDirection: 'row', justifyContent: "space-between"}}>
+                <View style={{paddingHorizontal: 20, flexDirection: 'row', justifyContent: "space-between"}}>
                     <View style={styles.rowItem}>
                         <Text style={{fontSize: 24}}>{data.item.hour.Prefix(2) + ":" + data.item.minute.Prefix(2)}</Text>
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>

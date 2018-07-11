@@ -245,6 +245,13 @@ global.appUrl = 'http://shiphire.com.cn/';
 global.appUndefined =  'undefined';
 global.appHomeVC = null;
 global.appMineVC = null;
+global.appMainTab = null;
+
+
+global.bluetoothDisconnectToBack = function() : void {
+    BluetoothManager.initUUID();  //断开连接后清空UUID
+    appMainTab.props.navigation.goBack('MainTab');
+};
 
 global.makeUpZero = function(str, bit = 2) : String {
     for(let i = str.length; i < bit; i++){
