@@ -42,7 +42,7 @@ export default class HomeVC extends Component {
         this.notifyIndex = -1;
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.config = [
-            {idKey:"Temperature", name:"水温", onPress:this.cellSelected.bind(this, "Temperature")},
+            {idKey:"Temperature", name:"水温/气温", onPress:this.cellSelected.bind(this, "Temperature")},
             {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
@@ -415,7 +415,7 @@ export default class HomeVC extends Component {
 
     _renderSubNameForIndex(item, index) {
         if (item.idKey === "Temperature") {
-            return this.state.temperatureWater + " ℃";
+            return this.state.temperatureWater + "/" + this.state.temperatureAir + " ℃";
         }
         else if (item.idKey === "Power") {
             return this.state.power + " %";
@@ -542,7 +542,7 @@ export default class HomeVC extends Component {
                     disableRightSwipe={true}
                     rightOpenValue={-1 * appData.DefaultOpenValue}
                 />
-                {this.renderFooter()}
+                {/*{this.renderFooter()}*/}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
             </ScrollView>
