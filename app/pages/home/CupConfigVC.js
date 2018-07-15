@@ -185,6 +185,7 @@ export default class HomeVC extends Component {
                     }
 
                     case CMDType.ReadAlarm: {
+                        this.refIndicator.hide();
                         if (length >= 10) {
                             this.alarmNum = value[5];
                             if (this.alarmNum === 0) {
@@ -247,8 +248,10 @@ export default class HomeVC extends Component {
             this.alert('发送数据不能为空');
             return;
         }
+        // this.refIndicator.show();
         BluetoothManager.write(data, index)
             .then(()=>{
+                this.refIndicator.hide();
                 if (showResponse) {
                     this.alert("发送成功");
                 }
@@ -258,6 +261,7 @@ export default class HomeVC extends Component {
                 })
             })
             .catch(err=>{
+                this.refIndicator.hide();
                 this.alert(err);
             })
     };
@@ -368,11 +372,11 @@ export default class HomeVC extends Component {
         }
         else if (key === "ReadAlarm") {
             let validIDs = [];
-            if (this.alarmNum === 0) {
+            if (this.alarmNum <= 0) {
                 validIDs = [0];
             }
             else {
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < Math.min(20, this.alarmNum); i++) {
                     validIDs.push(i);
                 }
                 this.state.alarms.map((item, index)=>{
@@ -384,6 +388,7 @@ export default class HomeVC extends Component {
             }
 
             if (validIDs.length > 0) {
+                this.refIndicator.show();
                 let data = numberToHex(CMDType.ReadAlarm) + numberToHex(validIDs[0]);
                 this.doWriteData(data);
             }
@@ -437,6 +442,7 @@ export default class HomeVC extends Component {
                 + numberToHex(alarm.hour)
                 + numberToHex(alarm.minute);
             this.doWriteData(data);
+            this.alarmNum++;
         }
     }
 
@@ -475,6 +481,16 @@ export default class HomeVC extends Component {
         }
     }
 
+    refreshRow(rowMap, index) {
+        this.closeRow(rowMap, index);
+        let {alarms} = this.state;
+        let alarm = alarms[index];
+
+        this.refIndicator.show();
+        let data = numberToHex(CMDType.ReadAlarm) + numberToHex(alarm.id);
+        this.doWriteData(data);
+    }
+
     deleteRow(rowMap, index) {
         this.closeRow(rowMap, index);
         PublicAlert("删除闹钟", "确定删除闹钟？", [
@@ -492,10 +508,9 @@ export default class HomeVC extends Component {
                     this.doWriteData(data);
 
                     this.alarmNum--;
-                    alarms.splice(index, 1);
-                    this.setState({
-                        alarms: alarms,
-                    });
+
+                    this.alarmMap.delete(alarm.id);
+                    this.setState({alarms:[...this.alarmMap.values()]});
                 }
             }
         ]);
@@ -521,6 +536,9 @@ export default class HomeVC extends Component {
                     renderItem={this._renderCell}
                     renderHiddenItem={(data, rowMap) => (
                         <View style={styles.rowBack}>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.refreshRow(rowMap, data.index) }>
+                                <Text style={styles.backTextWhite}>刷新</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
                                 <Text style={styles.backTextWhite}>删除</Text>
                             </TouchableOpacity>
@@ -528,7 +546,7 @@ export default class HomeVC extends Component {
                     )}
                     keyExtractor={(item: Object, index: number) => ('' + index)}
                     disableRightSwipe={true}
-                    rightOpenValue={-1 * appData.DefaultOpenValue}
+                    rightOpenValue={-2 * appData.DefaultOpenValue}
                 />
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
