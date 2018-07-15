@@ -447,16 +447,16 @@ export default class HomeVC extends Component {
     }
 
     onCellSelected(cellData: Object) {
-        let time = new Date();
-        time.setHours(cellData.item.hour);
-        time.setMinutes(cellData.item.minute);
-        this.props.navigation.navigate('CupAlarmSave',
-            {
-                index: cellData.index,
-                time: time,
-                status: cellData.item.status,
-                callBack: this.callBackFromAlarmSaveVC.bind(this),
-            });
+        // let time = new Date();
+        // time.setHours(cellData.item.hour);
+        // time.setMinutes(cellData.item.minute);
+        // this.props.navigation.navigate('CupAlarmSave',
+        //     {
+        //         index: cellData.index,
+        //         time: time,
+        //         status: cellData.item.status,
+        //         callBack: this.callBackFromAlarmSaveVC.bind(this),
+        //     });
     };
 
     onCellValueChange(cellData: Object, value: boolean) {
@@ -489,6 +489,23 @@ export default class HomeVC extends Component {
         this.refIndicator.show();
         let data = numberToHex(CMDType.ReadAlarm) + numberToHex(alarm.id);
         this.doWriteData(data);
+    }
+
+    editRow(rowMap, index) {
+        this.closeRow(rowMap, index);
+        let {alarms} = this.state;
+        let item = alarms[index];
+
+        let time = new Date();
+        time.setHours(item.hour);
+        time.setMinutes(item.minute);
+        this.props.navigation.navigate('CupAlarmSave',
+            {
+                index: index,
+                time: time,
+                status: item.status,
+                callBack: this.callBackFromAlarmSaveVC.bind(this),
+            });
     }
 
     deleteRow(rowMap, index) {
@@ -539,6 +556,9 @@ export default class HomeVC extends Component {
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.refreshRow(rowMap, data.index) }>
                                 <Text style={styles.backTextWhite}>刷新</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnMiddle]} onPress={ _ => this.editRow(rowMap, data.index) }>
+                                <Text style={styles.backTextWhite}>编辑</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
                                 <Text style={styles.backTextWhite}>删除</Text>
                             </TouchableOpacity>
@@ -546,7 +566,7 @@ export default class HomeVC extends Component {
                     )}
                     keyExtractor={(item: Object, index: number) => ('' + index)}
                     disableRightSwipe={true}
-                    rightOpenValue={-2 * appData.DefaultOpenValue}
+                    rightOpenValue={-3 * appData.DefaultOpenValue}
                 />
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
@@ -622,6 +642,10 @@ const styles = StyleSheet.create({
     },
     backRightBtnLeft: {
         backgroundColor: 'blue',
+        right: 150
+    },
+    backRightBtnMiddle: {
+        backgroundColor: 'green',
         right: 75
     },
     backRightBtnRight: {
