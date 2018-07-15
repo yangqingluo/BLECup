@@ -27,7 +27,8 @@ export default class ClockCell extends PureComponent<Props> {
                         <Text style={{fontSize: 24}}>{data.item.hour.Prefix(2) + ":" + data.item.minute.Prefix(2)}</Text>
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>
                     </View>
-                    <View style={styles.rowItem}>
+                    <View style={[styles.rowItem, {flexDirection: 'row',}]}>
+                        {objectNotNull(data.item.id) ? <Text style={{fontSize: 12}}>{data.item.id}</Text> : null}
                         <Switch value={alarmIsOpen(data.item.status)}
                                 onValueChange={(value) => this.props.onCellValueChange(data, value)}/>
                     </View>
@@ -47,5 +48,6 @@ const styles = StyleSheet.create({
     },
     rowItem: {
         justifyContent: "center",
+        // alignItems: 'center',
     }
 });

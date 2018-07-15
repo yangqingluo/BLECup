@@ -37,6 +37,7 @@ export default class HomeVC extends Component {
             power: '',
             alarms: [],
         };
+        this.alarmNum = 0;
         this.alarmMap = new Map();
         this.writeIndex = -1;
         this.notifyIndex = -1;
@@ -185,15 +186,20 @@ export default class HomeVC extends Component {
 
                     case CMDType.ReadAlarm: {
                         if (length >= 10) {
-                            let alarmNum = value[5];
-                            let alarm = {
-                                id: value[6],
-                                status: value[7],
-                                hour: value[8],
-                                minute: value[9],
-                            };
-                            this.alarmMap.set(alarm.id, alarm);
-                            this.setState({alarms:[...this.alarmMap.values()]});
+                            this.alarmNum = value[5];
+                            if (this.alarmNum === 0) {
+                                this.refToast.show("闹钟不存在，请添加");
+                            }
+                            else {
+                                let alarm = {
+                                    id: value[6],
+                                    status: value[7],
+                                    hour: value[8],
+                                    minute: value[9],
+                                };
+                                this.alarmMap.set(alarm.id, alarm);
+                                this.setState({alarms:[...this.alarmMap.values()]});
+                            }
                         }
                         break;
                     }
@@ -298,10 +304,8 @@ export default class HomeVC extends Component {
 
     renderFooter = () => {
         return(
-            <View style={{marginBottom:30}}>
-                {this.renderWriteView('写数据(write)：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
-                {this.renderWriteView('写数据(writeWithoutResponse)：','发送',BluetoothManager.writeWithoutResponseCharacteristicUUID,this.writeWithoutResponse,this.state.writeData)}
-                {this.renderReceiveView('读取的数据：','读取',BluetoothManager.readCharacteristicUUID,this.read,this.state.readData)}
+            <View style={{marginBottom:30, backgroundColor: appData.LightGrayColor}}>
+                {this.renderWriteView('发送的数据：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
                 {this.renderReceiveView('通知监听接收的数据：'+`${this.state.isMonitoring?'监听已开启':'监听未开启'}`,'开启通知',BluetoothManager.nofityCharacteristicUUID,this.notify,this.state.receiveData)}
             </View>
         )
@@ -317,17 +321,6 @@ export default class HomeVC extends Component {
                 <Text style={styles.content}>
                     {state}
                 </Text>
-                {characteristics.map((item,index)=>{
-                    return(
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            style={styles.buttonView}
-                            onPress={()=>{onPress(index)}}
-                            key={index}>
-                            <Text style={styles.buttonText}>{buttonText} ({item})</Text>
-                        </TouchableOpacity>
-                    )
-                })}
             </View>
         )
     };
@@ -342,25 +335,6 @@ export default class HomeVC extends Component {
                 <Text style={styles.content}>
                     {this.state.writeData}
                 </Text>
-                {characteristics.map((item,index)=>{
-                    return(
-                        <TouchableOpacity
-                            key={index}
-                            activeOpacity={0.7}
-                            style={styles.buttonView}
-                            onPress={()=>{onPress(index)}}>
-                            <Text style={styles.buttonText}>{buttonText} ({item})</Text>
-                        </TouchableOpacity>
-                    )
-                })}
-                <TextInput
-                    style={styles.textInput}
-                    value={this.state.text}
-                    placeholder='请输入消息'
-                    onChangeText={(text)=>{
-                        this.setState({text:text});
-                    }}
-                />
             </View>
         )
     };
@@ -394,21 +368,27 @@ export default class HomeVC extends Component {
         }
         else if (key === "ReadAlarm") {
             let validIDs = [];
-            for (let i = 0; i < 20; i++) {
-                validIDs.push(i);
+            if (this.alarmNum === 0) {
+                validIDs = [0];
             }
-            this.state.alarms.map((item, index)=>{
-                let j = validIDs.indexOf(item.id);
-                if (j !== -1) {
-                    validIDs.splice(j, 1);
+            else {
+                for (let i = 0; i < 20; i++) {
+                    validIDs.push(i);
                 }
-            });
+                this.state.alarms.map((item, index)=>{
+                    let j = validIDs.indexOf(item.id);
+                    if (j !== -1) {
+                        validIDs.splice(j, 1);
+                    }
+                });
+            }
+
             if (validIDs.length > 0) {
                 let data = numberToHex(CMDType.ReadAlarm) + numberToHex(validIDs[0]);
                 this.doWriteData(data);
             }
             else {
-                this.refToast.show("20个闹钟已经全部读取");
+                this.refToast.show(this.alarmNum + "个闹钟已经全部读取");
             }
         }
     }
@@ -505,10 +485,17 @@ export default class HomeVC extends Component {
             {
                 text:'确定',
                 onPress:()=>{
-                    let alarm = this.state.alarms[index];
+                    let {alarms} = this.state;
+                    let alarm = alarms[index];
                     let data = numberToHex(CMDType.RemoveAlarm)
                         + numberToHex(alarm.id);
                     this.doWriteData(data);
+
+                    this.alarmNum--;
+                    alarms.splice(index, 1);
+                    this.setState({
+                        alarms: alarms,
+                    });
                 }
             }
         ]);
@@ -525,6 +512,7 @@ export default class HomeVC extends Component {
     render() {
         return (
             <ScrollView style={styles.container}>
+                {this.renderFooter()}
                 {this._renderListItem()}
                 <SwipeListView
                     useFlatList
@@ -542,7 +530,6 @@ export default class HomeVC extends Component {
                     disableRightSwipe={true}
                     rightOpenValue={-1 * appData.DefaultOpenValue}
                 />
-                {/*{this.renderFooter()}*/}
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
             </ScrollView>
