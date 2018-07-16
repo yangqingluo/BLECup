@@ -5,6 +5,7 @@ import {
     View,
     StyleSheet,
     Dimensions,
+    Platform
 } from 'react-native';
 import Storage from 'react-native-storage';
 import {NavigationActions} from "react-navigation";
@@ -236,6 +237,10 @@ global.fourByteToLong = function(b1, b2, b3, b4) : Number {
 
 global.alarmIsOpen = function(status : Number) : boolean {
     return (status & 0x01) === 0x01;
+};
+
+global.isIOS = function() : boolean {
+    return Platform.OS === 'ios';
 };
 
 global.appFont = {

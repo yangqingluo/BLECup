@@ -138,20 +138,10 @@ export default class HomeVC extends Component {
         }
         else {
             BluetoothManager.checkState();
-            if(Platform.OS === 'ios'){
+            if(isIOS()) {
                 PublicAlert('请开启手机蓝牙');
-                // let time = 1531710626;
-                // let num1 = time & 0xff;
-                // let num2 = (time >> 8) & 0xff;
-                // let num3 = (time >> 16) & 0xff;
-                // let num4 = (time >> 24) & 0xff;
-                // let data = numberToHex(CMDType.SyncTime)
-                //     + numberToHex(num1)
-                //     + numberToHex(num2)
-                //     + numberToHex(num3)
-                //     + numberToHex(num4);
-                // PublicAlert(time + "  " + data + "**" + (num1 + (num2 << 8) + (num3 << 16) + (num4 << 24)));
-            } else {
+            }
+            else {
                 PublicAlert('提示','请开启手机蓝牙',[
                     {
                         text:'取消',

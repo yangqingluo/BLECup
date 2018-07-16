@@ -28,7 +28,7 @@ export default class ClockCell extends PureComponent<Props> {
                         <Text style={{fontSize: 12}}>{createRepeatString(data.item.status)}</Text>
                     </View>
                     <View style={[styles.rowItem, {flexDirection: 'row',}]}>
-                        {objectNotNull(data.item.id) ? <Text style={{fontSize: 12}}>{data.item.id}</Text> : null}
+                        {/*{objectNotNull(data.item.id) ? <Text style={{fontSize: 12}}>{data.index}</Text> : null}*/}
                         <Switch value={alarmIsOpen(data.item.status)}
                                 onValueChange={(value) => this.props.onCellValueChange(data, value)}/>
                     </View>

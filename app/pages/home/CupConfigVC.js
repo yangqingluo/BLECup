@@ -38,8 +38,7 @@ export default class HomeVC extends Component {
             alarms: [],
             cheers: [],
         };
-        this.alarmNum = 0;
-        this.alarmMap = new Map();
+        this.alarmNum = -1;
         this.writeIndex = -1;
         this.notifyIndex = -1;
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
@@ -85,18 +84,24 @@ export default class HomeVC extends Component {
         }
         else {
             this.notify(this.notifyIndex);
-            setTimeout(
-                () => {
-                    this.doReadTemperature();
-                },
-                200
-            );
-            setTimeout(
-                () => {
-                    this.doReadPower();
+            if (isIOS()) {
+                this.doReadTemperature();
+                this.doReadPower();
+            }
+            else {
+                setTimeout(
+                    () => {
+                        this.doReadTemperature();
                     },
-                300
-            );
+                    200
+                );
+                setTimeout(
+                    () => {
+                        this.doReadPower();
+                    },
+                    300
+                );
+            }
             // let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
             // let length = 26;
             // let cheersNum = value[5];
@@ -159,7 +164,7 @@ export default class HomeVC extends Component {
         let value = data.value;
         this.bluetoothReceiveData.push(value);
         console.log('BluetoothUpdateValue', value);
-        this.setState({receiveData:this.bluetoothReceiveData.join('')});
+        this.setState({receiveData:this.bluetoothReceiveData.join(' ')});
 
         // PublicAlert(JSON.stringify(value));
 
@@ -220,8 +225,15 @@ export default class HomeVC extends Component {
                                     hour: value[8],
                                     minute: value[9],
                                 };
-                                this.alarmMap.set(alarm.id, alarm);
-                                this.setState({alarms:[...this.alarmMap.values()]});
+
+                                let {alarms} = this.state;
+                                if (alarm.id >= 0 && alarm.id < alarms.length) {
+                                    alarms.splice(alarm.id, 1, alarm);
+                                }
+                                else {
+                                    alarms.push(alarm);
+                                }
+                                this.setState({alarms: alarms});
                             }
                         }
                         break;
@@ -247,7 +259,7 @@ export default class HomeVC extends Component {
                                     value[cheersStart + 4 * i + 1],
                                     value[cheersStart + 4 * i + 2],
                                     value[cheersStart + 4 * i + 3]);
-                                cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
+                                cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm:ss"));
                             }
                             this.setState({
                                 cheers: cheers,
@@ -415,25 +427,16 @@ export default class HomeVC extends Component {
                 });
         }
         else if (key === "ReadAlarm") {
-            let validIDs = [];
-            if (this.alarmNum <= 0) {
-                validIDs = [0];
+            let data = null;
+            if (this.alarmNum < 0) {
+                data = numberToHex(CMDType.ReadAlarm) + numberToHex(0);
             }
-            else {
-                for (let i = 0; i < Math.min(20, this.alarmNum); i++) {
-                    validIDs.push(i);
-                }
-                this.state.alarms.map((item, index)=>{
-                    let j = validIDs.indexOf(item.id);
-                    if (j !== -1) {
-                        validIDs.splice(j, 1);
-                    }
-                });
+            else if (this.state.alarms.length < this.alarmNum) {
+                data = numberToHex(CMDType.ReadAlarm) + numberToHex(this.state.alarms.length);
             }
 
-            if (validIDs.length > 0) {
+            if (objectNotNull(data)) {
                 this.refIndicator.show();
-                let data = numberToHex(CMDType.ReadAlarm) + numberToHex(validIDs[0]);
                 this.doWriteData(data);
             }
             else {
@@ -451,6 +454,14 @@ export default class HomeVC extends Component {
         }
         else if (item.idKey === "Cheers") {
             return this.state.cheers.join("\n");
+        }
+        else if (item.idKey === "ReadAlarm") {
+            if (this.alarmNum < 0) {
+                return "未读取";
+            }
+            else {
+                return this.state.alarms.length + "/" + this.alarmNum;
+            }
         }
     }
 
@@ -472,7 +483,7 @@ export default class HomeVC extends Component {
             alarm.minute = time.getMinutes();
 
             let data = numberToHex(CMDType.EditAlarm)
-                + numberToHex(alarm.id)
+                + numberToHex(index)
                 + numberToHex(alarm.status)
                 + numberToHex(alarm.hour)
                 + numberToHex(alarm.minute);
@@ -494,16 +505,12 @@ export default class HomeVC extends Component {
     }
 
     onCellSelected(cellData: Object) {
-        // let time = new Date();
-        // time.setHours(cellData.item.hour);
-        // time.setMinutes(cellData.item.minute);
-        // this.props.navigation.navigate('CupAlarmSave',
-        //     {
-        //         index: cellData.index,
-        //         time: time,
-        //         status: cellData.item.status,
-        //         callBack: this.callBackFromAlarmSaveVC.bind(this),
-        //     });
+        let {alarms} = this.state;
+        let alarm = cellData.item;
+
+        this.refIndicator.show();
+        let data = numberToHex(CMDType.ReadAlarm) + numberToHex(cellData.index);
+        this.doWriteData(data);
     };
 
     onCellValueChange(cellData: Object, value: boolean) {
@@ -515,7 +522,7 @@ export default class HomeVC extends Component {
             alarm.status &= 0xfe;
         }
         let data = numberToHex(CMDType.EditAlarm)
-            + numberToHex(alarm.id)
+            + numberToHex(cellData.index)
             + numberToHex(alarm.status)
             + numberToHex(alarm.hour)
             + numberToHex(alarm.minute);
@@ -534,7 +541,7 @@ export default class HomeVC extends Component {
         let alarm = alarms[index];
 
         this.refIndicator.show();
-        let data = numberToHex(CMDType.ReadAlarm) + numberToHex(alarm.id);
+        let data = numberToHex(CMDType.ReadAlarm) + numberToHex(index);
         this.doWriteData(data);
     }
 
@@ -568,13 +575,12 @@ export default class HomeVC extends Component {
                     let {alarms} = this.state;
                     let alarm = alarms[index];
                     let data = numberToHex(CMDType.RemoveAlarm)
-                        + numberToHex(alarm.id);
+                        + numberToHex(index);
                     this.doWriteData(data);
 
                     this.alarmNum--;
-
-                    this.alarmMap.delete(alarm.id);
-                    this.setState({alarms:[...this.alarmMap.values()]});
+                    alarms.splice(index, 1);
+                    this.setState({alarms: alarms});
                 }
             }
         ]);
@@ -600,9 +606,6 @@ export default class HomeVC extends Component {
                     renderItem={this._renderCell}
                     renderHiddenItem={(data, rowMap) => (
                         <View style={styles.rowBack}>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={ _ => this.refreshRow(rowMap, data.index) }>
-                                <Text style={styles.backTextWhite}>刷新</Text>
-                            </TouchableOpacity>
                             <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnMiddle]} onPress={ _ => this.editRow(rowMap, data.index) }>
                                 <Text style={styles.backTextWhite}>编辑</Text>
                             </TouchableOpacity>
@@ -613,7 +616,7 @@ export default class HomeVC extends Component {
                     )}
                     keyExtractor={(item: Object, index: number) => ('' + index)}
                     disableRightSwipe={true}
-                    rightOpenValue={-3 * appData.DefaultOpenValue}
+                    rightOpenValue={-2 * appData.DefaultOpenValue}
                 />
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
