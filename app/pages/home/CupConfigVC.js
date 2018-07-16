@@ -354,10 +354,10 @@ export default class HomeVC extends Component {
         else if (key === "SyncTime") {
             let time = Date.parse(new Date()) * 0.001;
             let data = numberToHex(CMDType.SyncTime)
-                + numberToHex(time & 0x000000ff)
-                + numberToHex((time & 0x0000ff00) >> 8)
-                + numberToHex((time & 0x00ff0000) >> 16)
-                + numberToHex((time & 0xff000000) >> 24);
+                + numberToHex(time & 0xff)
+                + numberToHex((time >> 8) & 0xff)
+                + numberToHex((time >> 16) & 0xff)
+                + numberToHex((time >> 24) & 0xff);
             this.doWriteData(data);
         }
         else if (key === "Find") {
