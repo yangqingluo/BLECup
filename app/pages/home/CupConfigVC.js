@@ -36,6 +36,7 @@ export default class HomeVC extends Component {
             temperatureAir: '',
             power: '',
             alarms: [],
+            cheers: [],
         };
         this.alarmNum = 0;
         this.alarmMap = new Map();
@@ -47,6 +48,7 @@ export default class HomeVC extends Component {
             {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
+            {idKey:"Cheers", name:"碰杯数据", hideArrowForward: true},
             {idKey:"AddAlarm", name:"添加闹钟", onPress:this.cellSelected.bind(this, "AddAlarm")},
             {idKey:"ReadAlarm", name:"读取闹钟", onPress:this.cellSelected.bind(this, "ReadAlarm")},
         ];
@@ -95,6 +97,26 @@ export default class HomeVC extends Component {
                     },
                 300
             );
+            // let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
+            // let length = 26;
+            // let cheersNum = value[5];
+            // let cheersStart = 6;
+            // if (cheersNum * 4 <= length - cheersStart) {
+            //     let cheers = [];
+            //     for (let i = 0; i < cheersNum; i++) {
+            //         let time = fourByteToLong(value[cheersStart + 4 * i],
+            //             value[cheersStart + 4 * i + 1],
+            //             value[cheersStart + 4 * i + 2],
+            //             value[cheersStart + 4 * i + 3]);
+            //         cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
+            //     }
+            //     this.setState({
+            //         cheers: cheers,
+            //     })
+            // }
+            // else {
+            //     PublicAlert("出错", "碰杯数据出错");
+            // }
         }
     }
 
@@ -212,6 +234,28 @@ export default class HomeVC extends Component {
 
                     case CMDType.FindCup: {
                         PublicAlert("查找水杯", "查找水杯完成");
+                        break;
+                    }
+
+                    case CMDType.Cheers: {
+                        let cheersNum = value[5];
+                        let cheersStart = 6;
+                        if (cheersNum * 4 <= length - cheersStart) {
+                            let cheers = [];
+                            for (let i = 0; i < cheersNum; i++) {
+                                let time = fourByteToLong(value[cheersStart + 4 * i],
+                                    value[cheersStart + 4 * i + 1],
+                                    value[cheersStart + 4 * i + 2],
+                                    value[cheersStart + 4 * i + 3]);
+                                cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
+                            }
+                            this.setState({
+                                cheers: cheers,
+                            })
+                        }
+                        else {
+                            PublicAlert("出错", "碰杯数据出错");
+                        }
                         break;
                     }
                 }
@@ -404,6 +448,9 @@ export default class HomeVC extends Component {
         }
         else if (item.idKey === "Power") {
             return this.state.power + " %";
+        }
+        else if (item.idKey === "Cheers") {
+            return this.state.cheers.join("\n");
         }
     }
 

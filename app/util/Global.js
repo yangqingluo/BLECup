@@ -230,6 +230,10 @@ global.createRepeatString = function(status : Number) : String {
     }
 };
 
+global.fourByteToLong = function(b1, b2, b3, b4) : Number {
+    return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
+};
+
 global.alarmIsOpen = function(status : Number) : boolean {
     return (status & 0x01) === 0x01;
 };
