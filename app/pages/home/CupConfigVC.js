@@ -104,26 +104,26 @@ export default class HomeVC extends Component {
                     300
                 );
             }
-            let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
-            let length = 26;
-            let cheersNum = value[5];
-            let cheersStart = 6;
-            if (cheersNum * 4 <= length - cheersStart) {
-                let cheers = [];
-                for (let i = 0; i < cheersNum; i++) {
-                    let time = fourByteToLong(value[cheersStart + 4 * i],
-                        value[cheersStart + 4 * i + 1],
-                        value[cheersStart + 4 * i + 2],
-                        value[cheersStart + 4 * i + 3]);
-                    cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
-                }
-                this.setState({
-                    cheers: cheers,
-                })
-            }
-            else {
-                PublicAlert("出错", "碰杯数据出错");
-            }
+            // let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
+            // let length = 26;
+            // let cheersNum = value[5];
+            // let cheersStart = 6;
+            // if (cheersNum * 4 <= length - cheersStart) {
+            //     let cheers = [];
+            //     for (let i = 0; i < cheersNum; i++) {
+            //         let time = fourByteToLong(value[cheersStart + 4 * i],
+            //             value[cheersStart + 4 * i + 1],
+            //             value[cheersStart + 4 * i + 2],
+            //             value[cheersStart + 4 * i + 3]);
+            //         cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
+            //     }
+            //     this.setState({
+            //         cheers: cheers,
+            //     })
+            // }
+            // else {
+            //     PublicAlert("出错", "碰杯数据出错");
+            // }
         }
     }
 
