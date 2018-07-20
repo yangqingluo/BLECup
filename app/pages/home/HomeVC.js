@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     },
     buttonView:{
         height:30,
-        backgroundColor:'rgb(33, 150, 243)',
+        backgroundColor:appData.LightBlueColor,
         paddingHorizontal:10,
         borderRadius:5,
         justifyContent:"center",
