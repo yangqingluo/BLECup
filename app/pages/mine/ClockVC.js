@@ -19,7 +19,7 @@ import CustomItem from '../../components/CustomItem';
 import { SwipeListView, SwipeRow } from '../../components/swipelist';
 import ClockCell from '../../components/ClockCell';
 
-export default class UserInfoVC extends Component {
+export default class ClockVC extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerTitle: "闹钟",
         headerRight: <TouchableOpacity style={{minHeight:40, justifyContent: "center"}} onPress={navigation.state.params.clickSureBtn}>

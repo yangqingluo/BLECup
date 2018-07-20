@@ -104,26 +104,26 @@ export default class HomeVC extends Component {
                     300
                 );
             }
-            // let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
-            // let length = 26;
-            // let cheersNum = value[5];
-            // let cheersStart = 6;
-            // if (cheersNum * 4 <= length - cheersStart) {
-            //     let cheers = [];
-            //     for (let i = 0; i < cheersNum; i++) {
-            //         let time = fourByteToLong(value[cheersStart + 4 * i],
-            //             value[cheersStart + 4 * i + 1],
-            //             value[cheersStart + 4 * i + 2],
-            //             value[cheersStart + 4 * i + 3]);
-            //         cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
-            //     }
-            //     this.setState({
-            //         cheers: cheers,
-            //     })
-            // }
-            // else {
-            //     PublicAlert("出错", "碰杯数据出错");
-            // }
+            let value = [0xFF, 0x0A, 14, 0, 0x09, 0x05, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B, 0xA2, 0x0C, 0x4C, 0x5B];
+            let length = 26;
+            let cheersNum = value[5];
+            let cheersStart = 6;
+            if (cheersNum * 4 <= length - cheersStart) {
+                let cheers = [];
+                for (let i = 0; i < cheersNum; i++) {
+                    let time = fourByteToLong(value[cheersStart + 4 * i],
+                        value[cheersStart + 4 * i + 1],
+                        value[cheersStart + 4 * i + 2],
+                        value[cheersStart + 4 * i + 3]);
+                    cheers.push(new Date(time * 1000).Format("yyyy-MM-dd HH:mm"));
+                }
+                this.setState({
+                    cheers: cheers,
+                })
+            }
+            else {
+                PublicAlert("出错", "碰杯数据出错");
+            }
         }
     }
 
@@ -273,6 +273,9 @@ export default class HomeVC extends Component {
                         }
                         break;
                     }
+
+                    default:
+                        break;
                 }
             }
         }
@@ -447,7 +450,22 @@ export default class HomeVC extends Component {
             }
         }
         else if (key === "Cheers") {
-
+            if (this.state.cheers.length > 0) {
+                PublicAlert("碰杯数据", this.state.cheers.join(" "));
+            }
+            else {
+                PublicAlert("碰杯数据", "暂时没有碰杯数据");
+            }
+        }
+        else if (key === "Alarm") {
+            this.props.navigation.navigate('CupAlarm',
+                {
+                    alarmNum: this.alarmNum,
+                    writeIndex: this.writeIndex,
+                    notifyIndex: this.notifyIndex,
+                    alarms: this.state.alarms,
+                    callBack: this.callBackFromAlarmVC.bind(this),
+                });
         }
     }
 
@@ -480,7 +498,6 @@ export default class HomeVC extends Component {
         })
     }
 
-
     callBackFromAlarmSaveVC(time, status, index) {
         if (index >= 0 && index < this.state.alarms.length) {
             let alarm = this.state.alarms[index];
@@ -508,6 +525,11 @@ export default class HomeVC extends Component {
             this.doWriteData(data);
             this.alarmNum++;
         }
+    }
+
+    callBackFromAlarmVC(alarms, alarmNum) {
+        this.alarmNum = alarmNum;
+        this.setState({alarms: alarms});
     }
 
     onCellSelected(cellData: Object) {
@@ -622,8 +644,8 @@ export default class HomeVC extends Component {
                         <TouchableOpacity onPress={this.cellSelected.bind(this, "SyncTime")} style={styles.cupButton}>
                             <Text style={styles.cupButtonText}>{"同步时间"}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.cellSelected.bind(this, "AddAlarm")} style={styles.cupButton}>
-                            <Text style={styles.cupButtonText}>{"添加闹钟"}</Text>
+                        <TouchableOpacity onPress={this.cellSelected.bind(this, "Alarm")} style={styles.cupButton}>
+                            <Text style={styles.cupButtonText}>{"查看闹钟"}</Text>
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity onPress={() => {

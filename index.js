@@ -5,6 +5,7 @@ import './app/util/Global';
 import MainTab from './app/pages/MainTab';
 import CupConfigVC from './app/pages/home/CupConfigVC';
 import CupAlarmSaveVC from './app/pages/home/CupAlarmSaveVC';
+import CupAlarmVC from './app/pages/home/CupAlarmVC';
 import UserInfoVC from './app/pages/mine/UserInfoVC';
 import ClockVC from './app/pages/mine/ClockVC';
 import ClockSaveVC from './app/pages/mine/ClockSaveVC';
@@ -17,6 +18,7 @@ const MyNavigator = StackNavigator({
 
         CupConfig:{screen: CupConfigVC},
         CupAlarmSave:{screen: CupAlarmSaveVC},
+        CupAlarm:{screen: CupAlarmVC},
 
         UserInfo:{screen: UserInfoVC},
         Clock:{screen: ClockVC},
