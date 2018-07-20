@@ -57,8 +57,8 @@ export default class CustomItem extends Component {
         let {logo, iconSize, logoWidth, logoHeight, name, subName, editValue, color, noSeparator, avatar, editable, font, showArrowForward, hideArrowForward, maxLength} = this.props;
         let radius = 12;
         return (
-            <View style={{flexDirection: "column", borderBottomColor: appData.SeparatorLightColor, borderBottomWidth: appData.SeparatorHeight}}>
-                {/*{noSeparator ? null : <View style={{height: appData.SeparatorHeight, backgroundColor: appData.SeparatorLightColor}}/>}*/}
+            <View>
+                {noSeparator ? null : <View style={{height: appData.SeparatorHeight, backgroundColor: appData.SeparatorLightColor}}/>}
                 <View style={styles.listItem} {...this.props}>
                     {logo? (<Image source={logo} style={{width: logoWidth, height: logoHeight, resizeMode: "cover", overflow:"hidden"}}/>) : null}
                     <Text style={styles.textLabel}>{name}</Text>

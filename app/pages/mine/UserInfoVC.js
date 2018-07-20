@@ -135,12 +135,12 @@ export default class UserInfoVC extends Component {
     }
 
     render() {
-        return <ScrollView style={appStyles.container}
-                           // keyboardShouldPersistTaps={"never"}
-                           >
-            {this._renderListItem()}
+        return <View style={appStyles.container}>
+            <ScrollView style={appStyles.container}>
+                {this._renderListItem()}
+            </ScrollView>
             <Toast ref={o => this.refToast = o} position={'center'}/>
             <IndicatorModal ref={o => this.refIndicator = o}/>
-        </ScrollView>
+        </View>
     }
 }

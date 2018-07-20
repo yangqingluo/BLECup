@@ -84,6 +84,7 @@ export default class MineVC extends Component {
         return <ScrollView style={appStyles.container}>
             {this._renderHeader()}
             {this._renderListItem()}
+            <View style={{minHeight: 60}}/>
         </ScrollView>
     }
 }
