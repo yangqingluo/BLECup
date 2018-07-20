@@ -39,24 +39,7 @@ export default class UserInfoVC extends Component {
 
     sureBtnClick() {
         let {index, time, status} = this.state;
-        let array = userData.clocks || [];
-        let clock = {
-            hour: time.getHours(),
-            minute: time.getMinutes(),
-            status: status,
-        };
-        if (index >= 0 && index < array.length) {
-            array.splice(index, 1, clock);
-        }
-        else {
-            array.push(clock);
-        }
-
-        let data = userData;
-        data.clocks = array;
-        saveUserData(data);
-
-        this.props.navigation.state.params.callBack && this.props.navigation.state.params.callBack(this.state.time, this.state.status, this.state.index);
+        this.props.navigation.state.params.callBack && this.props.navigation.state.params.callBack(time, status, index);
         this.props.navigation.goBack();
     }
 

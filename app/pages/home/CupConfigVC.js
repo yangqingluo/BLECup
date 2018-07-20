@@ -626,7 +626,18 @@ export default class HomeVC extends Component {
                             <Text style={styles.cupButtonText}>{"添加闹钟"}</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={this.goBack.bind(this)} style={{width: 70, height: 70, alignSelf: "center", position: 'absolute'}} >
+                    <TouchableOpacity onPress={() => {
+                        PublicAlert("切换水杯", "确定切换水杯？", [
+                            {
+                                text:'取消',
+                                onPress:()=>{ }
+                            },
+                            {
+                                text:'确定',
+                                onPress:this.goBack.bind(this)
+                            }
+                        ]);
+                    }} style={{width: 70, height: 70, alignSelf: "center", position: 'absolute'}} >
                         <ImageBackground source={require("../../images/change_cup.png")} style={{flex: 1}} />
                     </TouchableOpacity>
                 </View>

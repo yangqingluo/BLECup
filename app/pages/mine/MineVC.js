@@ -27,7 +27,7 @@ export default class MineVC extends Component {
         };
         this.config = [
             {idKey:"info", name:"个人资料修改", logo:require('../../images/icon_info.png'), onPress:this.cellSelected.bind(this, "UserInfo")},
-            {idKey:"clock", name:"闹钟设置", logo:require('../../images/icon_clock.png'), onPress:this.cellSelected.bind(this, "Clock")},
+            // {idKey:"clock", name:"闹钟设置", logo:require('../../images/icon_clock.png'), onPress:this.cellSelected.bind(this, "Clock")},
         ];
     }
 
