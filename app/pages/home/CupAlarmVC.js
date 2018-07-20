@@ -48,6 +48,9 @@ export default class CupAlarmVC extends Component {
             readBtnAction:this.readBtnAction.bind(this),
             addBtnAction:this.addBtnAction.bind(this),
         });
+        if (this.alarmNum < 0) {
+            this.readBtnAction();
+        }
     }
 
     componentWillUnmount() {
@@ -56,21 +59,7 @@ export default class CupAlarmVC extends Component {
     }
 
     readBtnAction() {
-        let data = null;
-        if (this.alarmNum < 0) {
-            data = numberToHex(CMDType.ReadAlarm) + numberToHex(0);
-        }
-        else if (this.state.alarms.length < this.alarmNum) {
-            data = numberToHex(CMDType.ReadAlarm) + numberToHex(this.state.alarms.length);
-        }
-
-        if (objectNotNull(data)) {
-            this.refIndicator.show();
-            this.doWriteData(data);
-        }
-        else {
-            this.refToast.show(this.alarmNum + "个闹钟已经全部读取");
-        }
+        this.doReadAlarm();
     }
 
     addBtnAction() {
@@ -110,12 +99,15 @@ export default class CupAlarmVC extends Component {
                     }
 
                     case CMDType.ReadAlarm: {
+                        let readNext = false;
+                        if (this.alarmNum < 0) {
+                            readNext = true;
+                        }
                         this.refIndicator.hide();
                         if (length >= 10) {
                             this.alarmNum = value[5];
                             if (this.alarmNum === 0) {
                                 this.setState({alarms: []});
-                                this.refToast.show("闹钟不存在，请添加");
                             }
                             else {
                                 let alarm = {
@@ -134,6 +126,9 @@ export default class CupAlarmVC extends Component {
                                 }
                                 this.setState({alarms: alarms});
                             }
+                            if (readNext) {
+                                this.doReadAlarm(readNext);
+                            }
                         }
                         break;
                     }
@@ -149,7 +144,7 @@ export default class CupAlarmVC extends Component {
         this.refToast.show(text);
     };
 
-    doWriteData(data, showResponse = false, index = this.writeIndex) {
+    doWriteData(data, showResponse = false, index = this.writeIndex, readNext = false) {
         if(stringIsEmpty(data)){
             this.alert('发送数据不能为空');
             return;
@@ -164,13 +159,39 @@ export default class CupAlarmVC extends Component {
                 this.bluetoothReceiveData = [];
                 this.setState({
                     writeData:data,
-                })
+                });
+                if (readNext) {
+                    this.doReadAlarm(readNext);
+                }
             })
             .catch(err=>{
                 this.refIndicator.hide();
                 this.alert(err);
             })
     };
+
+    doReadAlarm(readNext = false) {
+        let data = null;
+        if (this.alarmNum < 0) {
+            data = numberToHex(CMDType.ReadAlarm) + numberToHex(0);
+        }
+        else if (this.state.alarms.length < this.alarmNum) {
+            data = numberToHex(CMDType.ReadAlarm) + numberToHex(this.state.alarms.length);
+        }
+
+        if (objectNotNull(data)) {
+            this.refIndicator.show();
+            this.doWriteData(data, false, this.writeIndex, readNext);
+        }
+        else {
+            if (this.alarmNum === 0) {
+                this.refToast.show("闹钟不存在，请添加");
+            }
+            else {
+                this.refToast.show(this.alarmNum + "个闹钟已经全部读取");
+            }
+        }
+    }
 
     callBackFromAlarmSaveVC(time, status, index) {
         if (index >= 0 && index < this.state.alarms.length) {

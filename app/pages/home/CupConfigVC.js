@@ -149,14 +149,11 @@ export default class HomeVC extends Component {
         this.doWriteData(data);
     }
 
-    //蓝牙设备已连接
-    handleConnectPeripheral=(args)=>{
-        console.log('BleManagerConnectPeripheral:', args);
-    };
-
     //蓝牙设备已断开连接
     handleDisconnectPeripheral=(args)=>{
-        console.log('BleManagerDisconnectPeripheral:', args);
+        this.setState({
+            isConnected: false,
+        });
         bluetoothDisconnectToBack();
     };
 
