@@ -3,6 +3,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    Image,
     View,
     FlatList,
     Platform,
@@ -61,12 +62,13 @@ export default class HomeVC extends Component {
         console.log(data.id, data.name);
         let id = data.id;  //蓝牙连接id
         let macAddress;  //蓝牙Mac地址
-        if(Platform.OS === 'android'){
-            macAddress = data.id;
-        }else{
+        if (isIOS()) {
             //ios连接时不需要用到Mac地址，但跨平台识别同一设备时需要Mac地址
             //如果广播携带有Mac地址，ios可通过广播0x18获取蓝牙Mac地址，
             macAddress = BluetoothManager.getMacAddressFromIOS(data);
+        }
+        else {
+            macAddress = data.id;
         }
         this.deviceMap.set(data.id, data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
         this.setState({data:[...this.deviceMap.values()]});
@@ -77,6 +79,9 @@ export default class HomeVC extends Component {
             PublicAlert("设备异常", "请选择其他设备");
             return;
         }
+
+        // PublicAlert(JSON.stringify(item));
+        // return;
 
         //当前蓝牙正在连接时不能打开另一个连接进程
         if(BluetoothManager.isConnecting){
@@ -173,17 +178,15 @@ export default class HomeVC extends Component {
 
     renderHeader = () => {
         return(
-            <View style={{marginTop:20}}>
+            <View style={{marginTop:40}}>
+                <Image source={require("../../images/search_top.png")} style={{marginBottom: 40, alignSelf: "center"}}/>
                 <TouchableOpacity
                     activeOpacity={0.7}
-                    style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
+                    style={[styles.buttonView,{marginHorizontal:10, height:40, alignItems:'center'}]}
                     onPress={this.startScan.bind(this)}>
                     <Text style={styles.buttonText}>{this.state.scanning ? '正在搜索中' : '搜索水杯'}</Text>
                 </TouchableOpacity>
-
-                <Text style={{marginLeft:10,marginTop:10}}>
-                    {'可用设备'}
-                </Text>
+                <View style={{marginTop:10}} />
             </View>
         )
     };

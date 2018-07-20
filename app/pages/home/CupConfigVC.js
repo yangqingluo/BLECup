@@ -216,6 +216,7 @@ export default class HomeVC extends Component {
                         if (length >= 10) {
                             this.alarmNum = value[5];
                             if (this.alarmNum === 0) {
+                                this.setState({alarms: []});
                                 this.refToast.show("闹钟不存在，请添加");
                             }
                             else {
