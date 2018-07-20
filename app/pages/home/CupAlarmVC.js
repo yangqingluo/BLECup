@@ -217,8 +217,8 @@ export default class CupAlarmVC extends Component {
                 + numberToHex(alarm.status)
                 + numberToHex(alarm.hour)
                 + numberToHex(alarm.minute);
-            this.doWriteData(data);
             this.alarmNum++;
+            this.doWriteData(data, false, this.writeIndex, true);
         }
     }
 
@@ -311,9 +311,9 @@ export default class CupAlarmVC extends Component {
         }
         return(
             <View >
-                <Text style={{marginTop: 5, marginLeft: 10, fontSize: 12}}>
-                    {showText}
-                </Text>
+                {/*<Text style={{marginTop: 5, marginLeft: 10, fontSize: 12}}>*/}
+                    {/*{showText}*/}
+                {/*</Text>*/}
             </View>
         )
     };
