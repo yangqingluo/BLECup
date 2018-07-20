@@ -16,8 +16,8 @@ import Toast from "react-native-easy-toast";
 
 export default class HomeVC extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: "水杯",
         tabBarLabel: "水杯",
+        header: null,
     });
 
     constructor(props) {
@@ -178,7 +178,7 @@ export default class HomeVC extends Component {
 
     renderHeader = () => {
         return(
-            <View style={{marginTop:40}}>
+            <View style={{marginTop: 100}}>
                 <Image source={require("../../images/search_top.png")} style={{marginBottom: 40, alignSelf: "center"}}/>
                 <TouchableOpacity
                     activeOpacity={0.7}

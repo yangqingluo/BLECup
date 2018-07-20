@@ -140,6 +140,7 @@ global.appData = {
     BlueColor: '#2c9bfd',
     LightBlueColor: "#54b2ff",
     LittleBlueColor: "#7dd3ff",
+    GreenColor: '#2cff6f',
     DeepGrayColor: '#a8a8a8',
     GrayColor: '#d8d8d8',
     LightGrayColor: '#f7f7f7',

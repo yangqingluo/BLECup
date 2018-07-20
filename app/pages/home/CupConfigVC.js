@@ -4,6 +4,7 @@ import {
     Text,
     TouchableOpacity,
     ScrollView,
+    ImageBackground,
     View,
     FlatList,
     Platform,
@@ -20,6 +21,7 @@ import Toast from "react-native-easy-toast";
 export default class HomeVC extends Component {
     static navigationOptions = ({navigation}) => ({
         headerTitle: "水杯",
+        headerLeft: null,
     });
 
     constructor(props) {
@@ -444,6 +446,9 @@ export default class HomeVC extends Component {
                 this.refToast.show(this.alarmNum + "个闹钟已经全部读取");
             }
         }
+        else if (key === "Cheers") {
+
+        }
     }
 
     _renderSubNameForIndex(item, index) {
@@ -597,31 +602,62 @@ export default class HomeVC extends Component {
 
     render() {
         return (
-            <ScrollView style={styles.container}>
-                {this.renderFooter()}
-                {this._renderListItem()}
-                <SwipeListView
-                    useFlatList
-                    style={styles.container}
-                    data={this.state.alarms}
-                    renderItem={this._renderCell}
-                    renderHiddenItem={(data, rowMap) => (
-                        <View style={styles.rowBack}>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnMiddle]} onPress={ _ => this.editRow(rowMap, data.index) }>
-                                <Text style={styles.backTextWhite}>编辑</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
-                                <Text style={styles.backTextWhite}>删除</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                    keyExtractor={(item: Object, index: number) => ('' + index)}
-                    disableRightSwipe={true}
-                    rightOpenValue={-2 * appData.DefaultOpenValue}
-                />
+            <View style={styles.container}>
+                <ImageBackground source={require("../../images/icon_cup_temperature.png")}
+                                 style={{width:0.7 * screenWidth, height: 0.7 * screenWidth, marginVertical: 40, alignSelf: "center"}}>
+                    <TouchableOpacity onPress={this.cellSelected.bind(this, "Temperature")} style={{flex: 1, justifyContent:"center", alignItems:'center',}}>
+                        <Text style={styles.cupTemperatureText}>{this.state.temperatureWater + " ℃"}</Text>
+                    </TouchableOpacity>
+                </ImageBackground>
+                <View style={{marginTop: 20, justifyContent: "center"}}>
+                    <View style={styles.cupButtonView}>
+                        <TouchableOpacity onPress={this.cellSelected.bind(this, "Power")} style={styles.cupButton}>
+                            <Text style={styles.cupButtonText}>{"电量：" + this.state.power + " %"}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.cellSelected.bind(this, "Cheers")} style={styles.cupButton}>
+                            <Text style={styles.cupButtonText}>{"碰杯：" + this.state.cheers.length + "次"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.cupButtonView}>
+                        <TouchableOpacity onPress={this.cellSelected.bind(this, "SyncTime")} style={styles.cupButton}>
+                            <Text style={styles.cupButtonText}>{"同步时间"}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.cellSelected.bind(this, "AddAlarm")} style={styles.cupButton}>
+                            <Text style={styles.cupButtonText}>{"添加闹钟"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity onPress={this.goBack.bind(this)} style={{width: 70, height: 70, alignSelf: "center", position: 'absolute'}} >
+                        <ImageBackground source={require("../../images/change_cup.png")} style={{flex: 1}} />
+                    </TouchableOpacity>
+                </View>
                 <Toast ref={o => this.refToast = o} position={'center'}/>
                 <IndicatorModal ref={o => this.refIndicator = o}/>
-            </ScrollView>
+            </View>
+            // <ScrollView style={styles.container}>
+            //     {this.renderFooter()}
+            //     {this._renderListItem()}
+            //     <SwipeListView
+            //         useFlatList
+            //         style={styles.container}
+            //         data={this.state.alarms}
+            //         renderItem={this._renderCell}
+            //         renderHiddenItem={(data, rowMap) => (
+            //             <View style={styles.rowBack}>
+            //                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnMiddle]} onPress={ _ => this.editRow(rowMap, data.index) }>
+            //                     <Text style={styles.backTextWhite}>编辑</Text>
+            //                 </TouchableOpacity>
+            //                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.index) }>
+            //                     <Text style={styles.backTextWhite}>删除</Text>
+            //                 </TouchableOpacity>
+            //             </View>
+            //         )}
+            //         keyExtractor={(item: Object, index: number) => ('' + index)}
+            //         disableRightSwipe={true}
+            //         rightOpenValue={-2 * appData.DefaultOpenValue}
+            //     />
+            //     <Toast ref={o => this.refToast = o} position={'center'}/>
+            //     <IndicatorModal ref={o => this.refIndicator = o}/>
+            // </ScrollView>
         )
     }
 }
@@ -702,5 +738,30 @@ const styles = StyleSheet.create({
     backRightBtnRight: {
         backgroundColor: 'red',
         right: 0
+    },
+    cupButtonView:{
+        flexDirection:'row',
+        paddingHorizontal: 5,
+        height: 70,
+        marginTop: 10,
+    },
+    cupButton:{
+        flex: 1,
+        marginHorizontal: 5,
+        justifyContent:"center",
+        alignItems:'center',
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: appData.LittleBlueColor,
+    },
+    cupButtonText:{
+        fontSize: 18,
+        fontWeight: appData.FontWeightLight,
+        color: appData.GreenColor,
+    },
+    cupTemperatureText:{
+        fontSize: px2dp(48),
+        fontWeight: appData.FontWeightMedium,
+        color: appData.LightBlueColor,
     },
 });
