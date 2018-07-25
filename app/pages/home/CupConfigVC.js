@@ -49,7 +49,7 @@ export default class HomeVC extends Component {
             {idKey:"Power", name:"电量", onPress:this.cellSelected.bind(this, "Power")},
             {idKey:"SyncTime", name:"同步时间", onPress:this.cellSelected.bind(this, "SyncTime")},
             {idKey:"Find", name:"查找水杯", onPress:this.cellSelected.bind(this, "Find")},
-            {idKey:"Cheers", name:"碰杯数据", hideArrowForward: true},
+            {idKey:"Cheers", name:"喝水数据", hideArrowForward: true},
             {idKey:"AddAlarm", name:"添加闹钟", onPress:this.cellSelected.bind(this, "AddAlarm")},
             {idKey:"ReadAlarm", name:"读取闹钟", onPress:this.cellSelected.bind(this, "ReadAlarm")},
         ];
@@ -122,7 +122,7 @@ export default class HomeVC extends Component {
             //     })
             // }
             // else {
-            //     PublicAlert("出错", "碰杯数据出错");
+            //     PublicAlert("出错", "喝水数据出错");
             // }
         }
     }
@@ -266,7 +266,7 @@ export default class HomeVC extends Component {
                             })
                         }
                         else {
-                            PublicAlert("出错", "碰杯数据出错");
+                            PublicAlert("出错", "喝水数据出错");
                         }
                         break;
                     }
@@ -448,10 +448,10 @@ export default class HomeVC extends Component {
         }
         else if (key === "Cheers") {
             if (this.state.cheers.length > 0) {
-                PublicAlert("碰杯数据", this.state.cheers.join(" "));
+                PublicAlert("喝水数据", this.state.cheers.join(" "));
             }
             else {
-                PublicAlert("碰杯数据", "暂时没有碰杯数据");
+                PublicAlert("喝水数据", "暂时没有喝水数据");
             }
         }
         else if (key === "Alarm") {
@@ -634,7 +634,7 @@ export default class HomeVC extends Component {
                             <Text style={styles.cupButtonText}>{"电量：" + this.state.power + " %"}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.cellSelected.bind(this, "Cheers")} style={styles.cupButton}>
-                            <Text style={styles.cupButtonText}>{"碰杯：" + this.state.cheers.length + "次"}</Text>
+                            <Text style={styles.cupButtonText}>{"喝水：" + this.state.cheers.length + "次"}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.cupButtonView}>
